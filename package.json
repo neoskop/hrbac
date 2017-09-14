@@ -28,19 +28,27 @@
   },
   "homepage": "https://github.com/neoskop/neoskop-ugl#readme",
   "devDependencies": {
+    "@angular/common": "4.3.6",
+    "@angular/core": "4.3.6",
+    "@angular/platform-browser": "4.3.6",
+    "@angular/router": "4.3.6",
     "@types/chai": "4.0.2",
     "@types/mocha": "2.2.41",
     "@types/node": "8.0.20",
-    "@types/sinon": "2.3.3",
+    "@types/sinon": "2.3.4",
+    "@types/sinon-chai": "2.7.29",
     "chai": "4.1.1",
     "coveralls": "2.13.1",
     "mocha": "3.5.0",
     "nyc": "11.1.0",
     "rimraf": "2.6.1",
-    "sinon": "3.2.0",
+    "rxjs": "5.4.3",
+    "sinon": "3.2.1",
+    "sinon-chai": "2.13.0",
     "ts-node": "3.3.0",
     "tslib": "1.7.1",
-    "typescript": "2.4.2"
+    "typescript": "2.4.2",
+    "zone.js": "0.8.17"
   },
   "nyc": {
     "exclude": [
@@ -49,9 +57,5 @@
       "lib.es6"
     ]
   },
-  "dependencies": {
-    "@angular/core": "4.3.6",
-    "rxjs": "5.4.3",
-    "zone.js": "0.8.17"
-  }
+  "dependencies": {}
 }

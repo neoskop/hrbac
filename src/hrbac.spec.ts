@@ -67,18 +67,6 @@ describe('HierachicalRoleBaseAccessControl', () => {
     hrbac.getPermissionManager().deny('banned');
   });
 
-  // describe('role inheritance', () => {
-  //   it('should save roles', () => {
-  //
-  //     expect(hrbac.getRoleManager().getParents(user)).to.be.eql(new Set([ 'guest' ]));
-  //     expect(hrbac.getRoleManager().getParents(editor)).to.be.eql(new Set([ 'user', 'manager' ]));
-  //   });
-  //
-  //   it('should return parents', () => {
-  //     expect(hrbac.getRoleManager().getRecursiveParentsOf(editor)).to.be.eql([ 'editor', 'user', 'manager', 'guest' ]);
-  //   });
-  // });
-
   describe('permissions', () => {
     it('guest', () => {
       expect(hrbac.isAllowed('guest', documentA, 'read')).to.be.true;
@@ -105,6 +93,8 @@ describe('HierachicalRoleBaseAccessControl', () => {
       
       expect(hrbac.isAllowed(user, profileU)).to.be.true;
       expect(hrbac.isAllowed(user, profileV)).to.be.false;
+      
+      expect(hrbac.isAllowed(user, documentA)).to.be.false;
     });
 
     it('editor', () => {

@@ -1,0 +1,57 @@
+{
+  "name": "@neoskop/ugl",
+  "version": "1.2.1",
+  "description": "A library to create UGL files",
+  "main": "lib/index.js",
+  "jsnext:main": "lib.es6/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "test:raw": "mocha --compilers ts:ts-node/register src/**/*.spec.ts src/*.spec.ts",
+    "test:watch": "npm run test:raw -- --watch --watch-extension ts",
+    "test:coverage": "nyc -e '.ts' -r html -r text npm run test:raw",
+    "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
+    "clean": "rimraf lib lib.es6 coverage",
+    "prebuild": "npm run test:coverage",
+    "build": "npm run clean && tsc && tsc -p tsconfig.es6.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neoskop/neoskop-ugl.git"
+  },
+  "keywords": [
+    "ugl"
+  ],
+  "author": "Mark Wecke <mark.wecke@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neoskop/neoskop-ugl/issues"
+  },
+  "homepage": "https://github.com/neoskop/neoskop-ugl#readme",
+  "devDependencies": {
+    "@types/chai": "4.0.2",
+    "@types/mocha": "2.2.41",
+    "@types/node": "8.0.20",
+    "@types/sinon": "2.3.3",
+    "chai": "4.1.1",
+    "coveralls": "2.13.1",
+    "mocha": "3.5.0",
+    "nyc": "11.1.0",
+    "rimraf": "2.6.1",
+    "sinon": "3.2.0",
+    "ts-node": "3.3.0",
+    "tslib": "1.7.1",
+    "typescript": "2.4.2"
+  },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.ts",
+      "lib",
+      "lib.es6"
+    ]
+  },
+  "dependencies": {
+    "@angular/core": "4.3.6",
+    "rxjs": "5.4.3",
+    "zone.js": "0.8.17"
+  }
+}

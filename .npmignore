@@ -1,0 +1,12 @@
+/.idea/
+/node_modules/
+
+/src/
+/.nyc_output/
+/coverage/
+/.coveralls.yml
+/.gitignore
+/.travis.yml
+/tsconfig.json
+/tsconfig.es6.json
+/yarn.lock

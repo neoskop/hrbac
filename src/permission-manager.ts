@@ -55,6 +55,14 @@ export class ACLS extends Map<TRole, ACL> {
   }
 }
 
+export type PermissionTransfer = [
+  string|null,
+  [
+      string|null,
+      { type: 'allow'|'deny', privileges: string[]|null }[]
+  ][]
+][]
+
 @Injectable()
 export class PermissionManager implements IPermissionManager {
   protected acls = ACLS.create();
@@ -91,6 +99,41 @@ export class PermissionManager implements IPermissionManager {
        privilege? : string[]|string|null,
        assertion? : AssertionFunction|Assertion|null) : void {
     this.add(Type.Deny, role, resource, privilege, assertion);
+  }
+  
+  export() : PermissionTransfer {
+    const data : PermissionTransfer = [];
+    
+    for(const [ role, acl ] of this.acls) {
+      const resources : [
+          string|null,
+          { type: 'allow'|'deny', privileges: string[]|null }[]
+          ][] = [];
+      
+      for(const [ resource, aces ] of acl) {
+        resources.push([
+            resource,
+            aces.map(ace => ({
+                type: ace.type,
+                privileges: ace.privileges && Array.from(ace.privileges)
+            }))
+        ]);
+      }
+      
+      data.push([ role, resources ])
+    }
+    
+    return data;
+  }
+  
+  import(data : PermissionTransfer) : void {
+    for(const [ role, resources ] of data) {
+      for(const [ resource, aces ] of resources) {
+        for(const ace of aces) {
+          this.add(ace.type as Type, role, resource, ace.privileges);
+        }
+      }
+    }
   }
   
   getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE[] {

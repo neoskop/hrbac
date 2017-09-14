@@ -34,5 +34,30 @@ describe('RoleManager', () => {
         roleManager.setParents('b', [ 'd' ]);
         
         expect(roleManager.getRecursiveParentsOf('a')).to.be.eql([ 'a', 'b', 'c', 'd' ]);
+    });
+    
+    it('should export roles', () => {
+        roleManager.setParents('a', [ 'b', 'c' ]);
+        roleManager.setParents('b', [ 'd' ]);
+        
+        const exp = roleManager.export();
+        
+        expect(exp).to.be.eql({
+            a: [ 'b', 'c' ],
+            b: [ 'd' ]
+        });
+    });
+    
+    it('should import roles', () => {
+        roleManager.setParents('a', [ 'b', 'c' ]);
+        roleManager.setParents('b', [ 'd' ]);
+    
+        const exp = roleManager.export();
+    
+        const rm = new RoleManager();
+        
+        rm.import(exp);
+        
+        expect(rm).to.be.eql(roleManager);
     })
 })

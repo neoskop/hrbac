@@ -57,4 +57,20 @@ export class RoleManager implements IRoleManager {
 
     return Array.from(parents);
   }
+  
+  export() : { [role : string] : string[] } {
+    const data : { [role : string] : string[] } = {};
+    
+    for(const [ role, parents ] of this.roles) {
+      data[role] = Array.from(parents);
+    }
+    
+    return data;
+  }
+  
+  import(data : { [role : string] : string[] }) : void {
+      for(const [ role, parents ] of Object.entries(data)) {
+        this.setParents(role, parents);
+      }
+  }
 }

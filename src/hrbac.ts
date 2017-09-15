@@ -1,24 +1,21 @@
 import { Injectable } from '@angular/core';
-import { RoleManager, IRoleManager } from './role-manager';
+import { IRoleManager } from './role-manager';
 import { Resource, Role } from "./types";
-import { PermissionManager, Type, IPermissionManager } from './permission-manager';
+import { IPermissionManager, Type } from './permission-manager';
 
 @Injectable()
-export class HierarchicalRoleBaseAccessControl<
-    R extends IRoleManager = RoleManager,
-    P extends IPermissionManager = PermissionManager
->{
+export class HierarchicalRoleBaseAccessControl {
     
-    constructor(protected readonly roleManager : R,
-                protected readonly permissionManager : P) {
+    constructor(protected readonly roleManager : IRoleManager,
+                protected readonly permissionManager : IPermissionManager) {
     }
     
-    getRoleManager() : R {
-        return this.roleManager;
+    getRoleManager<R extends IRoleManager>() : R {
+        return this.roleManager as R;
     }
     
-    getPermissionManager() : P {
-        return this.permissionManager;
+    getPermissionManager<P extends IPermissionManager>() : P {
+        return this.permissionManager as P;
     }
     
     isAllowed(role : Role | string, resource : Resource | string, privilege : string | null = null) : boolean {

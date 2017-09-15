@@ -10,8 +10,8 @@ export enum Type {
   Allow = 'allow'
 }
 
-type TRole = string|null;
-type TResource = string|null;
+export type TRole = string|null;
+export type TResource = string|null;
 
 export class ACE {
   constructor(public readonly type : Type,

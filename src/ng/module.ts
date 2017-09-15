@@ -19,11 +19,11 @@ export function hrbacFactory(roleManager : RoleManager,
     const hrbac = new HierarchicalRoleBaseAccessControl(roleManager, permissionManager);
     
     if(roles) {
-        hrbac.getRoleManager().import(roles);
+        hrbac.getRoleManager<RoleManager>().import(roles);
     }
     
     if(permissions) {
-        hrbac.getPermissionManager().import(permissions);
+        hrbac.getPermissionManager<PermissionManager>().import(permissions);
     }
     
     return hrbac;

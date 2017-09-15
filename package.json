@@ -12,7 +12,7 @@
     "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
     "clean": "rimraf lib lib.es6 coverage",
     "prebuild": "npm run test:coverage",
-    "build": "npm run clean && tsc && tsc -p tsconfig.es6.json"
+    "build": "npm run clean && tsc && ngc -p tsconfig.es6.json"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,8 @@
   "homepage": "https://github.com/neoskop/neoskop-ugl#readme",
   "devDependencies": {
     "@angular/common": "4.3.6",
+    "@angular/compiler": "4.3.6",
+    "@angular/compiler-cli": "4.3.6",
     "@angular/core": "4.3.6",
     "@angular/platform-browser": "4.3.6",
     "@angular/router": "4.3.6",

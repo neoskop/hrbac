@@ -1,6 +1,6 @@
 {
   "name": "@neoskop/hrbac",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "An implementation of a hierarchical role based access control for nodejs and browser.",
   "main": "lib/index.js",
   "module": "lib.es6/index.js",

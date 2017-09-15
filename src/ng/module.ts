@@ -1,12 +1,13 @@
-import { Inject, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
+import { PermissionTransfer, PermissionManager } from '../permission-manager';
+import { Role } from '../types';
+import { AllowedDirective, DeniedDirective } from './directives';
+import { AllowedPipe, DeniedPipe } from './pipes';
+import { _PERMISSIONS, _ROLES, _DEFAULT_ROLE } from './tokens';
+import { DEFAULT_ROLE, RoleStore } from './role-store';
 import { HierarchicalRoleBaseAccessControl } from '../hrbac';
 import { RoleManager } from '../role-manager';
-import { PermissionManager, PermissionTransfer } from '../permission-manager';
-import { Role } from '../types';
-import { DEFAULT_ROLE, RoleStore } from './role-store';
-import { HrbacGuard } from "./guard";
-import { AllowedDirective, DeniedDirective } from "./directives";
-import { AllowedPipe, DeniedPipe } from './pipes';
+import { HrbacGuard } from './guard';
 
 export function defaultRoleFactory(role : string = 'guest') {
     return new Role(role);
@@ -22,10 +23,7 @@ export interface IHrbacRootConfiguration {
     permissions? : PermissionTransfer;
 }
 
-export const _CONFIG = new InjectionToken<IHrbacRootConfiguration|undefined>('Config');
-export const _DEFAULT_ROLE = new InjectionToken<string | undefined>('DefaultRole');
-export const _ROLES = new InjectionToken<IRoles | undefined>('Roles');
-export const _PERMISSIONS = new InjectionToken<PermissionTransfer | undefined>('Permissions');
+
 
 
 @NgModule({
@@ -42,22 +40,14 @@ export const _PERMISSIONS = new InjectionToken<PermissionTransfer | undefined>('
         DeniedPipe
     ]
 })
-export class HrbacChildModule {
-
-}
+export class HrbacChildModule {}
 
 @NgModule({
-    declarations: [
-        AllowedDirective,
-        DeniedDirective,
-        AllowedPipe,
-        DeniedPipe
+    imports: [
+        HrbacChildModule
     ],
-    exports     : [
-        AllowedDirective,
-        DeniedDirective,
-        AllowedPipe,
-        DeniedPipe
+    exports: [
+        HrbacChildModule
     ]
 })
 export class HrbacRootModule {
@@ -65,11 +55,11 @@ export class HrbacRootModule {
                 @Inject(_ROLES) protected roles : IRoles,
                 @Inject(_PERMISSIONS) protected permissions : PermissionTransfer) {
         if(roles) {
-            hrbac.getRoleManager<RoleManager>().import(roles);
+            hrbac.getRoleManager().import(roles);
         }
-        
+
         if(permissions) {
-            hrbac.getPermissionManager<PermissionManager>().import(permissions);
+            hrbac.getPermissionManager().import(permissions);
         }
     }
 }
@@ -81,15 +71,14 @@ export class HrbacModule {
         return {
             ngModule : HrbacRootModule,
             providers: [
-                { provide: _CONFIG, useValue: config },
                 { provide: _DEFAULT_ROLE, useValue: config.defaultRole },
                 { provide: _ROLES, useValue: config.roles },
                 { provide: _PERMISSIONS, useValue: config.permissions },
+                { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
                 HierarchicalRoleBaseAccessControl,
                 RoleManager,
                 PermissionManager,
                 RoleStore,
-                { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
                 HrbacGuard
             ]
         }

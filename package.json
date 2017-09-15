@@ -3,18 +3,17 @@
   "version": "1.0.0-alpha.1",
   "description": "An implementation of a hierarchical role based access control for nodejs and browser.",
   "main": "lib/index.js",
-  "jsnext:main": "lib.es6/index.js",
   "module": "lib.es6/index.js",
   "es2015": "lib.es6/index.js",
   "typings": "lib.es6/index.d.ts",
   "scripts": {
     "test:raw": "TS_NODE_CACHE=false mocha --compilers ts:ts-node/register src/**/*.spec.ts src/*.spec.ts",
     "test:watch": "npm run test:raw -- --watch --watch-extension ts",
-    "test:coverage": "nyc -e '.ts' -r html -r text npm run test:raw",
+    "test:coverage": "rimraf coverage && nyc -e '.ts' -r html -r text npm run test:raw",
     "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
-    "clean": "rimraf lib lib.es6 coverage",
+    "clean": "rimraf lib lib.es6",
     "prebuild": "npm run test:coverage",
-    "build": "npm run clean && tsc && ngc -p tsconfig.es6.json"
+    "build": "npm run clean && ngc -p tsconfig.json && ngc -p tsconfig.es6.json"
   },
   "repository": {
     "type": "git",
@@ -41,7 +40,8 @@
   "homepage": "https://github.com/neoskop/hrbac#readme",
   "peerDependencies": {
     "@angular/common": "^4.3.6",
-    "@angular/core": "^4.3.6"
+    "@angular/core": "^4.3.6",
+    "rxjs": "^5.4.3"
   },
   "devDependencies": {
     "@angular/common": "4.3.6",

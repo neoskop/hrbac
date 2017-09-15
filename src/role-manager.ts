@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Role } from './types';
 
 export interface IRoleManager {
+  addParents(role : Role|string, parents : (Role|string)[]) : void;
+  setParents(role : Role|string, parents : (Role|string)[]) : void;
   getParents(role : Role|string) : Set<string>|undefined;
   getRecursiveParentsOf(role : Role|string) : string[];
 }

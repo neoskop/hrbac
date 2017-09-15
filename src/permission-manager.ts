@@ -3,6 +3,14 @@ import { Assertion, AssertionFunction, Resource, Role } from "./types";
 
 export interface IPermissionManager {
     getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE[];
+    allow(role? : Role|string|null,
+          resource? : Resource|string|null,
+          privilege? : string[]|string|null,
+          assertion? : AssertionFunction|Assertion|null) : void
+    deny(role? : Role|string|null,
+          resource? : Resource|string|null,
+          privilege? : string[]|string|null,
+          assertion? : AssertionFunction|Assertion|null) : void
 }
 
 export enum Type {

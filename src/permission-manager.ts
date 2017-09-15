@@ -14,8 +14,19 @@ export interface IPermissionManager {
 }
 
 export enum Type {
-  Deny = 'deny',
-  Allow = 'allow'
+  Deny,
+  Allow
+}
+
+/* istanbul ignore next */
+export namespace Type {
+  export function fromString(str : 'allow'|'deny') {
+    return str === 'allow' ? Type.Allow : Type.Deny
+  }
+  
+  export function toString(e : Type) : 'allow'|'deny' {
+    return Type[e].toLowerCase() as any;
+  }
 }
 
 export type TRole = string|null;
@@ -122,7 +133,7 @@ export class PermissionManager implements IPermissionManager {
         resources.push([
             resource,
             aces.map(ace => ({
-                type: ace.type,
+                type: Type.toString(ace.type),
                 privileges: ace.privileges && Array.from(ace.privileges)
             }))
         ]);
@@ -138,7 +149,7 @@ export class PermissionManager implements IPermissionManager {
     for(const [ role, resources ] of data) {
       for(const [ resource, aces ] of resources) {
         for(const ace of aces) {
-          this.add(ace.type as Type, role, resource, ace.privileges);
+          this.add(Type.fromString(ace.type), role, resource, ace.privileges);
         }
       }
     }

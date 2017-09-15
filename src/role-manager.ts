@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Role } from './types';
+import { objectEntries } from './utils';
 
 export interface IRoleManager {
   addParents(role : Role|string, parents : (Role|string)[]) : void;
@@ -71,7 +72,7 @@ export class RoleManager implements IRoleManager {
   }
   
   import(data : { [role : string] : string[] }) : void {
-      for(const [ role, parents ] of Object.entries(data)) {
+      for(const [ role, parents ] of objectEntries(data)) {
         this.setParents(role, parents);
       }
   }

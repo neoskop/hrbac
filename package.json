@@ -1,7 +1,7 @@
 {
-  "name": "@neoskop/ugl",
-  "version": "1.2.1",
-  "description": "A library to create UGL files",
+  "name": "@neoskop/hrbac",
+  "version": "1.0.0-alpha.1",
+  "description": "An implementation of a hierarchical role based access control for nodejs and browser.",
   "main": "lib/index.js",
   "jsnext:main": "lib.es6/index.js",
   "typings": "lib/index.d.ts",
@@ -16,17 +16,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neoskop/neoskop-ugl.git"
+    "url": "git+https://github.com/neoskop/hrbac.git"
   },
   "keywords": [
-    "ugl"
+    "hierarchical",
+    "rbac",
+    "acl",
+    "permission",
+    "permissions",
+    "access",
+    "control",
+    "role",
+    "resource",
+    "privilege",
+    "assert"
   ],
   "author": "Mark Wecke <mark.wecke@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/neoskop/neoskop-ugl/issues"
+    "url": "https://github.com/neoskop/hrbac/issues"
   },
-  "homepage": "https://github.com/neoskop/neoskop-ugl#readme",
+  "homepage": "https://github.com/neoskop/hrbac#readme",
   "devDependencies": {
     "@angular/common": "4.3.6",
     "@angular/compiler": "4.3.6",

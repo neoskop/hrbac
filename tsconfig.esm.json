@@ -2,5 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "es2015"
+  },
+  "angularCompilerOptions": {
+    "genDir": "dist",
+    "debug": false,
+    "skipTemplateCodegen": true,
+    "skipMetadataEmit": false,
+    "strictMetadataEmit": true
   }
 }

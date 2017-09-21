@@ -13,7 +13,7 @@
     "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
     "clean": "rimraf lib dist",
     "prebuild": "npm run test:coverage",
-    "build": "npm run clean && ngc run build:ngc && npm run build:rollup:index && npm run build:rollup:ng",
+    "build": "npm run clean && npm run build:ngc && npm run build:rollup:index && npm run build:rollup:ng",
     "build:ngc": "ngc -p tsconfig.esm.json",
     "build:rollup:index": "rollup -c rollup.index.js",
     "build:rollup:ng": "rollup -c rollup.ng.js"

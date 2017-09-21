@@ -6,12 +6,16 @@ export default {
         format: 'amd',
         file: 'dist/hrbac.bundle.js'
     },
-    name: '@neoskop/hrbac',
     external: [
         '@angular/core',
         '@angular/common'
     ],
     plugins: [
         resolve()
-    ]
+    ],
+    treeshake: false,
+    exports: 'named',
+    amd: {
+        id: '@neoskop/hrbac'
+    }
 }

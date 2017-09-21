@@ -6,11 +6,22 @@ export default {
         format: 'amd',
         file: 'dist/hrbac-ng.bundle.js'
     },
-    name: '@neoskop/hrbac/ng',
     external: id => {
-        return id.startsWith('@angular') || id.startsWith('rxjs');
+        return id.startsWith('@angular') || id.startsWith('rxjs') || id.startsWith('@neoskop');
     },
     plugins: [
-        resolve()
-    ]
+        {
+            resolveId(name) {
+                if(name.startsWith('..')) {
+                    return '@neoskop/hrbac';
+                }
+            }
+        },
+        resolve(),
+    ],
+    treeshake: false,
+    exports: 'named',
+    amd: {
+        id: '@neoskop/hrbac/ng'
+    }
 }

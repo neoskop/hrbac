@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
 import { RoleManager } from './role-manager';
 import { Resource, Role } from "./types";
 import { PermissionManager, Type } from './permission-manager';
+import { Injectable } from './utils';
 
 @Injectable()
 export class HierarchicalRoleBaseAccessControl {

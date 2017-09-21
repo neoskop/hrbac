@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
 import { Role } from './types';
-import { objectEntries } from './utils';
+import { Injectable, objectEntries } from './utils';
 
 export interface IRoleManager {
   addParents(role : Role|string, parents : (Role|string)[]) : void;

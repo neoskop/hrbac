@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { Assertion, AssertionFunction, Resource, Role } from "./types";
+import { Injectable } from './utils';
 
 export interface IPermissionManager {
     getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE[];

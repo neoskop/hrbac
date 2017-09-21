@@ -1,6 +1,7 @@
 /.idea/
 /node_modules/
 
+/cjs/
 /lib/
 /dist/
 /.nyc_output/

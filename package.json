@@ -7,11 +7,11 @@
   "jsnext:main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "test:raw": "TS_NODE_CACHE=false mocha --compilers ts:ts-node/register src/**/*.spec.ts src/*.spec.ts",
+    "test:raw": "TS_NODE_CACHE=false mocha --compilers ts:ts-node/register 'src/**/*.spec.ts'",
     "test:watch": "npm run test:raw -- --watch --watch-extension ts",
     "test:coverage": "rimraf coverage && nyc -e '.ts' -r html -r text npm run test:raw",
     "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
-    "clean": "rimraf lib dist",
+    "clean": "rimraf lib dist index.d.ts index.js index.js.map index.metadata.json ng.d.ts ng.js ng.js.map ng.metadata.json",
     "prebuild": "npm run test:coverage",
     "build": "npm run clean && npm run build:ngc && npm run build:rollup:index && npm run build:rollup:ng",
     "build:ngc": "ngc -p tsconfig.esm.json",

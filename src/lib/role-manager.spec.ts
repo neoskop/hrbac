@@ -59,5 +59,12 @@ describe('RoleManager', () => {
         rm.import(exp);
         
         expect(rm).to.be.eql(roleManager);
+    });
+  
+    it('should consider circular role dependencies', () => {
+        roleManager.setParents('b', [ 'a', 'c' ]);
+        roleManager.setParents('a', [ 'b' ]);
+        
+        expect(roleManager.getRecursiveParentsOf('b')).to.be.eql([ 'b', 'a', 'c' ]);
     })
 })

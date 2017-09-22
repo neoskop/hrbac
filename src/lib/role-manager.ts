@@ -49,6 +49,10 @@ export class RoleManager implements IRoleManager {
     let i = 0;
 
     while(i < queue.length) {
+      if(parents.has(queue[i])) {
+        ++i;
+        continue;
+      }
       parents.add(queue[i]);
 
       if(this.roles.has(queue[i])) {

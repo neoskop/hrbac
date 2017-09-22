@@ -15,7 +15,7 @@ describe('PermissionManager', () => {
         const assertB : AssertionFunction = () => true;
         permissionManager.allow('roleA', 'resource', 'privA', assertA);
         permissionManager.deny('roleB', 'resource', 'privB', assertB);
-        permissionManager.allow('roleC', 'resourceC');
+        permissionManager.allow('roleC', 'resourceC', null, () => true);
         permissionManager.allow('roleD');
         
         const aces = permissionManager.getAcesForRolesAndResource([ 'roleA', 'roleB' ], 'resource');

@@ -8,8 +8,8 @@ export class Resource {
   constructor(public resourceId : string) {}
 }
 
-export type AssertionFunction = (hrbac : HierarchicalRoleBaseAccessControl, role : Role|null, resource? : Resource|null, privilege? : string|null) => boolean;
+export type AssertionFunction<O extends Role = Role, R extends Resource = Resource> = (hrbac : HierarchicalRoleBaseAccessControl, role : O|null, resource : R|null, privilege : string|null) => boolean;
 
-export class Assertion {
-  constructor(public assert : AssertionFunction) {}
+export class Assertion<O extends Role = Role, R extends Resource = Resource> {
+  constructor(public assert : AssertionFunction<O, R>) {}
 }

@@ -1,20 +1,19 @@
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
     input: 'index.js',
     output: {
-        format: 'amd',
-        file: 'dist/hrbac.bundle.js'
+        format: 'umd',
+        name: 'neoskop.hrbac',
+        file: 'dist/hrbac.bundle.js',
+        sourcemap: true
     },
-    external: [
-        '@angular/core',
-        '@angular/common'
-    ],
     plugins: [
-        resolve()
+        resolve(),
+        sourcemaps()
     ],
     treeshake: false,
-    exports: 'named',
     amd: {
         id: '@neoskop/hrbac'
     }

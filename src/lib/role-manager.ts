@@ -2,10 +2,41 @@ import { Role } from './types';
 import { Injectable, objectEntries } from './utils';
 
 export interface IRoleManager {
-  addParents(role : Role|string, parents : (Role|string)[]) : void;
-  setParents(role : Role|string, parents : (Role|string)[]) : void;
   getParents(role : Role|string) : Set<string>|undefined;
   getRecursiveParentsOf(role : Role|string) : string[];
+}
+
+export interface IAsyncRoleManager {
+    getParents(role : Role|string) : Promise<Set<string>|undefined>|Set<string>|undefined;
+    getRecursiveParentsOf(role : Role|string) : Promise<string[]>|string[];
+}
+
+@Injectable()
+export abstract class AsyncRoleManager implements IAsyncRoleManager {
+    abstract getParents(role : Role | string) : Promise<Set<string>>|Set<string>;
+    async getRecursiveParentsOf(role : Role | string) : Promise<string[]> {
+        const roleId = (role as Role).roleId || role as string;
+    
+        const queue = [ roleId ];
+        const parents = new Set<string>();
+        let i = 0;
+    
+        while(i < queue.length) {
+            if(parents.has(queue[i])) {
+                ++i;
+                continue;
+            }
+            parents.add(queue[i]);
+        
+            let parentRoles = await this.getParents(queue[i]);
+            if(parentRoles && parentRoles.size > 0) {
+                queue.push(...Array.from(parentRoles!));
+            }
+            ++i;
+        }
+    
+        return Array.from(parents);
+    }
 }
 
 @Injectable()
@@ -42,7 +73,7 @@ export class RoleManager implements IRoleManager {
   }
   
   getRecursiveParentsOf(role : Role|string) : string[] {
-      const roleId = (role as Role).roleId || role as string;
+    const roleId = (role as Role).roleId || role as string;
 
     const queue = [ roleId ];
     const parents = new Set<string>();

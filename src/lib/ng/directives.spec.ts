@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { TemplateRef } from '@angular/core';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC } from '../hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
 import { RoleManager } from "../role-manager";
@@ -13,7 +13,7 @@ import { SinonSpy, spy } from 'sinon';
 use(sinonChai);
 
 describe('AllowedDirective', () => {
-    let hrbac : HierarchicalRoleBaseAccessControl;
+    let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : AllowedDirective;
     let viewContainerRef : {
@@ -36,7 +36,7 @@ describe('AllowedDirective', () => {
     }
     
     beforeEach(() => {
-        hrbac = new HierarchicalRoleBaseAccessControl(new RoleManager(), new PermissionManager());
+        hrbac = new HRBAC(new RoleManager(), new PermissionManager());
         
         hrbac.getPermissionManager().allow('guest', 'index');
         hrbac.getPermissionManager().allow('guest', 'comment', [ 'read', 'create' ]);
@@ -155,7 +155,7 @@ describe('AllowedDirective', () => {
 });
 
 describe('DeniedDirective', () => {
-    let hrbac : HierarchicalRoleBaseAccessControl;
+    let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : DeniedDirective;
     let viewContainerRef : {
@@ -178,7 +178,7 @@ describe('DeniedDirective', () => {
     }
     
     beforeEach(() => {
-        hrbac = new HierarchicalRoleBaseAccessControl(new RoleManager(), new PermissionManager());
+        hrbac = new HRBAC(new RoleManager(), new PermissionManager());
         
         hrbac.getPermissionManager().allow('guest', 'index');
         hrbac.getPermissionManager().allow('guest', 'comment', [ 'read', 'create' ]);

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC } from '../hrbac';
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs/Subscription';
 import { Resource, Role } from '../types';
@@ -10,7 +10,7 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy {
     
     protected abstract readonly trueValue : boolean;
     
-    constructor(protected hrbac : HierarchicalRoleBaseAccessControl,
+    constructor(protected hrbac : HRBAC,
                 protected roleStore : RoleStore,
                 protected cdr : ChangeDetectorRef) {
         this.subscription = this.roleStore.roleChange.subscribe(() => {

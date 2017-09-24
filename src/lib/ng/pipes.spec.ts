@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC } from '../hrbac';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Role } from "../types";
@@ -11,13 +11,13 @@ import { AllowedPipe, DeniedPipe } from './pipes';
 use(sinonChai);
 
 describe('AllowedPipe', () => {
-    let hrbac : SinonStubbedInstance<HierarchicalRoleBaseAccessControl>;
+    let hrbac : SinonStubbedInstance<HRBAC>;
     let roleStore : RoleStore;
     let pipe : AllowedPipe;
     let cdr : any;
     
     beforeEach(() => {
-        hrbac = createStubInstance(HierarchicalRoleBaseAccessControl);
+        hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(true);
         roleStore = new RoleStore('guest');
         cdr = {
@@ -70,13 +70,13 @@ describe('AllowedPipe', () => {
 });
 
 describe('DeniedPipe', () => {
-    let hrbac : SinonStubbedInstance<HierarchicalRoleBaseAccessControl>;
+    let hrbac : SinonStubbedInstance<HRBAC>;
     let roleStore : RoleStore;
     let pipe : DeniedPipe;
     let cdr : any;
     
     beforeEach(() => {
-        hrbac = createStubInstance(HierarchicalRoleBaseAccessControl);
+        hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(true);
         roleStore = new RoleStore('guest');
         cdr = {

@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect } from 'chai';
 import { PermissionManager, Type } from './permission-manager';
-import { AssertionFunction } from './types';
+import { AssertionFunction, Assertion, AsyncAssertion } from './types';
 
 describe('PermissionManager', () => {
     let permissionManager : PermissionManager;
@@ -59,4 +59,26 @@ describe('PermissionManager', () => {
         
         expect(pm).to.be.eql(permissionManager);
     })
-})
+});
+
+describe('Assertion', () => {
+    it('should create an assertion', () => {
+        const fn = () => true;
+        
+        expect(new Assertion(fn).assert).to.be.equal(fn);
+    });
+});
+
+describe('AsyncAssertion', () => {
+    it('should create an assertion from sync assertion function', () => {
+        const fn = () => true;
+        
+        expect(new AsyncAssertion(fn).assert).to.be.equal(fn);
+    });
+    
+    it('should create an assertion from async assertion function', () => {
+        const fn = async () => true;
+        
+        expect(new AsyncAssertion(fn).assert).to.be.equal(fn);
+    });
+});

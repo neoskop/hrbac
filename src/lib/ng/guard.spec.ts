@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC } from '../hrbac';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { HrbacGuard } from './guard';
@@ -12,14 +12,14 @@ import { Role } from "../types";
 use(sinonChai);
 
 describe('HrbacGuard', () => {
-    let hrbac : SinonStubbedInstance<HierarchicalRoleBaseAccessControl>;
+    let hrbac : SinonStubbedInstance<HRBAC>;
     let roleStore : RoleStore;
     let guard : HrbacGuard;
     let route : any;
     let state : any;
     
     beforeEach(() => {
-        hrbac = createStubInstance(HierarchicalRoleBaseAccessControl);
+        hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(true);
         roleStore = new RoleStore('guest');
         guard = new HrbacGuard(hrbac as any, roleStore);

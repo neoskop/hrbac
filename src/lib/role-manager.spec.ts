@@ -1,7 +1,23 @@
 import 'mocha';
 import 'reflect-metadata';
 import { expect } from 'chai';
-import { RoleManager } from './role-manager';
+import { RoleManager, AsyncRoleManager } from './role-manager';
+import { Role } from "./types";
+
+class AsyncRoleManagerImpl extends AsyncRoleManager {
+    roles = new Map([
+        [ 'user', new Set([ 'guest' ]) ],
+        [ 'author', new Set([ 'user', 'creator' ]) ],
+        [ 'editor', new Set([ 'user', 'manager' ]) ],
+        [ 'manager', new Set([ 'editor' ]) ]
+    ])
+    
+    async getParents(role : Role | string) : Promise<Set<string>> {
+        const roleId = (role as Role).roleId || role as string;
+        
+        return this.roles.get(roleId)!;
+    }
+}
 
 describe('RoleManager', () => {
     let roleManager : RoleManager;
@@ -67,4 +83,15 @@ describe('RoleManager', () => {
         
         expect(roleManager.getRecursiveParentsOf('b')).to.be.eql([ 'b', 'a', 'c' ]);
     })
-})
+});
+
+describe('RoleManager', () => {
+    let roleManager : AsyncRoleManager;
+    beforeEach(() => {
+        roleManager = new AsyncRoleManagerImpl();
+    });
+    
+    it('should consider circular role dependencies', async () => {
+        expect(await roleManager.getRecursiveParentsOf('manager')).to.be.eql([ 'manager', 'editor', 'user', 'guest' ]);
+    });
+});

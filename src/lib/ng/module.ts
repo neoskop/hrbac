@@ -5,7 +5,7 @@ import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
 import { _PERMISSIONS, _ROLES, _DEFAULT_ROLE } from './tokens';
 import { DEFAULT_ROLE, RoleStore } from './role-store';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC } from '../hrbac';
 import { RoleManager } from '../role-manager';
 import { HrbacGuard } from './guard';
 
@@ -51,7 +51,7 @@ export class HrbacChildModule {}
     ]
 })
 export class HrbacRootModule {
-    constructor(protected hrbac: HierarchicalRoleBaseAccessControl,
+    constructor(protected hrbac: HRBAC,
                 @Inject(_ROLES) protected roles : IRoles,
                 @Inject(_PERMISSIONS) protected permissions : PermissionTransfer) {
         if(roles) {
@@ -75,7 +75,7 @@ export class HrbacModule {
                 { provide: _ROLES, useValue: config.roles },
                 { provide: _PERMISSIONS, useValue: config.permissions },
                 { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                HierarchicalRoleBaseAccessControl,
+                HRBAC,
                 RoleManager,
                 PermissionManager,
                 RoleStore,

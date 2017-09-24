@@ -1,5 +1,5 @@
 import { Directive, Injectable, OnChanges, OnDestroy, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC } from '../hrbac';
 import { NgIf } from '@angular/common';
 import { Subscription } from "rxjs/Subscription";
 import { RoleStore } from "./role-store";
@@ -16,7 +16,7 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
   
   protected abstract readonly trueValue : boolean;
   
-  constructor(protected hrbac : HierarchicalRoleBaseAccessControl,
+  constructor(protected hrbac : HRBAC,
               protected roleStore : RoleStore,
               viewContainer : ViewContainerRef,
               templateRef : TemplateRef<AbstractDirective>) {

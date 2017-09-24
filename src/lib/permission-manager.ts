@@ -1,16 +1,18 @@
-import { Assertion, AssertionFunction, Resource, Role } from "./types";
+import { Assertion, AssertionFunction, Resource, Role, AsyncAssertion } from "./types";
 import { Injectable } from './utils';
 
 export interface IPermissionManager {
-    getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE[];
-    allow(role? : Role|string|null,
-          resource? : Resource|string|null,
-          privilege? : string[]|string|null,
-          assertion? : AssertionFunction|Assertion|null) : void
-    deny(role? : Role|string|null,
-          resource? : Resource|string|null,
-          privilege? : string[]|string|null,
-          assertion? : AssertionFunction|Assertion|null) : void
+    getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE<Assertion>[]
+}
+
+export interface IAsyncPermissionManager {
+    getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : Promise<ACE<AsyncAssertion>[]>|ACE<AsyncAssertion>[];
+}
+
+@Injectable()
+export abstract class AsyncPermissionManager implements  IAsyncPermissionManager {
+    abstract getAcesForRolesAndResource(roles : string[], resource : string | Resource | null) : Promise<ACE<AsyncAssertion>[]>|ACE<AsyncAssertion>[];
+    
 }
 
 export enum Type {
@@ -32,42 +34,42 @@ export namespace Type {
 export type TRole = string|null;
 export type TResource = string|null;
 
-export class ACE {
+export class ACE<A> {
   constructor(public readonly type : Type,
               public readonly privileges : Set<string>|null,
-              public readonly assertion : Assertion|null) {}
+              public readonly assertion : A|null) {}
 }
 
-export class ACL extends Map<TResource, ACE[]>{
+export class ACL<A> extends Map<TResource, ACE<A>[]>{
   
-  add(role : TResource, ace : ACE) {
+  add(role : TResource, ace : ACE<A>) {
     if(!this.has(role)) {
       this.set(role, []);
     }
     this.get(role)!.push(ace);
   }
   
-  static create<K, V>(arr? : [ K, V ][]) : ACL {
-    const map = new Map<K, V>(arr);
+  static create<A>(arr? : [ TResource, ACE<A>[] ][]) : ACL<A> {
+    const map = new Map(arr);
     Object.setPrototypeOf(map, ACL.prototype);
     
     return map as any;
   }
 }
 
-export class ACLS extends Map<TRole, ACL> {
+export class ACLS<A> extends Map<TRole, ACL<A>> {
   
-  get(role : TRole) : ACL {
+  get(role : TRole) : ACL<A> {
     if(!this.has(role)) {
-      this.set(role, ACL.create());
+      this.set(role, ACL.create<A>());
     }
     
     return super.get(role)!;
   }
   
   
-  static create<K, V>(arr? : [ K, V ][]) : ACLS {
-    const map = new Map<K, V>(arr);
+  static create<A>(arr? : [ TRole, ACL<A> ][]) : ACLS<A> {
+    const map = new Map(arr);
     Object.setPrototypeOf(map, ACLS.prototype);
     
     return map as any;
@@ -84,7 +86,7 @@ export type PermissionTransfer = [
 
 @Injectable()
 export class PermissionManager implements IPermissionManager {
-  protected acls = ACLS.create();
+  protected acls = ACLS.create<Assertion>();
   
   protected add(type : Type,
                 role : Role|string|null = null,
@@ -155,9 +157,9 @@ export class PermissionManager implements IPermissionManager {
     }
   }
   
-  getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE[] {
+  getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE<Assertion>[] {
     const resourceId : TResource = resource && (resource as Resource).resourceId || resource as string;
-    let result : ACE[] = [];
+    let result : ACE<Assertion>[] = [];
     
     for(const [ role, acl ] of this.acls) {
       for(const r of roles) {

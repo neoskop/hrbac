@@ -7,7 +7,6 @@ import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Role } from "../types";
 import { AllowedPipe, DeniedPipe } from './pipes';
-import { WrappedValue } from '@angular/core';
 
 use(sinonChai);
 
@@ -46,7 +45,7 @@ describe('AllowedPipe', () => {
     it('should call hrbac isAllowed and return comparison to trueValue with role from role store', async () => {
         const result = pipe.transform('test-resource', 'test-privilege');
         
-        expect(result).to.be.eql(WrappedValue.wrap(false));
+        expect(result).to.be.null;
         expect(hrbac.isAllowed).to.have.been.calledOnce;
         expect(hrbac.isAllowed).to.have.been.calledWithExactly(
             new Role('guest'),
@@ -66,7 +65,7 @@ describe('AllowedPipe', () => {
     it('should call hrbac isAllowed and return comparison to trueValue with provided role', async () => {
         const result = pipe.transform('test-resource', 'test-privilege', 'test-role');
         
-        expect(result).to.be.eql(WrappedValue.wrap(false));
+        expect(result).to.be.null;
         expect(hrbac.isAllowed).to.have.been.calledOnce;
         expect(hrbac.isAllowed).to.have.been.calledWithExactly(
             'test-role',
@@ -117,7 +116,7 @@ describe('DeniedPipe', () => {
     it('should call hrbac isAllowed and return comparison to trueValue with role from role store', async () => {
         const result = pipe.transform('test-resource', 'test-privilege');
         
-        expect(result).to.be.eql(WrappedValue.wrap(false));
+        expect(result).to.be.null;
         expect(hrbac.isAllowed).to.have.been.calledOnce;
         expect(hrbac.isAllowed).to.have.been.calledWithExactly(
             new Role('guest'),
@@ -137,7 +136,7 @@ describe('DeniedPipe', () => {
     it('should call hrbac isAllowed and return comparison to trueValue with provided role', async () => {
         const result = pipe.transform('test-resource', 'test-privilege', 'test-role');
         
-        expect(result).to.be.eql(WrappedValue.wrap(false));
+        expect(result).to.be.null;
         expect(hrbac.isAllowed).to.have.been.calledOnce;
         expect(hrbac.isAllowed).to.have.been.calledWithExactly(
             'test-role',

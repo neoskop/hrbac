@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform, WrappedValue } from '@angular/core';
+import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { AsyncHRBAC } from '../hrbac';
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs/Subscription';
@@ -6,7 +6,7 @@ import { Resource, Role } from '../types';
 
 @Injectable()
 export abstract class AbstractPipe implements PipeTransform, OnDestroy {
-    private _latestValue : boolean = false;
+    private _latestValue : boolean|null = null;
     private _latestResourceId : string;
     private _latestPrivilege : string|null;
     private _latestRoleId : string;
@@ -36,6 +36,7 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy {
         if(resourceId === this._latestResourceId && roleId === this._latestRoleId && privilege === this._latestPrivilege) {
             return this._latestValue;
         }
+        this._latestValue = null;
     
         Promise.resolve(this.hrbac.isAllowed(role!, resource, privilege)).then(allowed => {
             this._latestResourceId = resourceId;
@@ -45,7 +46,7 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy {
             this.cdr.markForCheck();
         });
         
-        return WrappedValue.wrap(false);
+        return this._latestValue;
     }
     
     ngOnDestroy() : void {

@@ -1,12 +1,12 @@
 import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
-import { PermissionManager, PermissionTransfer, IAsyncPermissionManager, AsyncPermissionManager } from '../permission-manager';
+import { AsyncPermissionManager, PermissionManager, PermissionTransfer } from '../permission-manager';
 import { Role } from '../types';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
 import { _DEFAULT_ROLE, _PERMISSIONS, _ROLES } from './tokens';
 import { DEFAULT_ROLE, RoleStore } from './role-store';
-import { HRBAC, AsyncHRBAC } from '../hrbac';
-import { RoleManager, IAsyncRoleManager, AsyncRoleManager } from '../role-manager';
+import { AsyncHRBAC, HRBAC } from '../hrbac';
+import { AsyncRoleManager, RoleManager } from '../role-manager';
 import { HrbacGuard } from './guard';
 
 export function defaultRoleFactory(role : string = 'guest') {
@@ -17,14 +17,8 @@ export interface IRoles {
     [role : string] : string[]
 }
 
-export interface Type<T> extends Function {
-    new(...args : any[]) : T;
-}
-
 export interface IAsyncHrbacRootConfiguration {
     defaultRole?: string;
-    roleManager?: Type<IAsyncRoleManager>;
-    permissionManager?: Type<IAsyncPermissionManager>;
 }
 
 export interface IHrbacRootConfiguration {
@@ -106,16 +100,14 @@ export class HrbacModule {
         }
     }
     
-    static forRootAsync({ defaultRole, roleManager = RoleManager, permissionManager = PermissionManager } : IAsyncHrbacRootConfiguration = {}) : ModuleWithProviders {
+    static forRootAsync(config : IAsyncHrbacRootConfiguration = {}) : ModuleWithProviders {
         return {
             ngModule : AsyncHrbacRootModule,
             providers: [
-                roleManager,
-                permissionManager,
-                { provide: _DEFAULT_ROLE, useValue: defaultRole },
+                { provide: _DEFAULT_ROLE, useValue: config.defaultRole },
                 { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                { provide: AsyncRoleManager, useExisting: roleManager },
-                { provide: AsyncPermissionManager, useExisting: permissionManager },
+                { provide: AsyncRoleManager, useClass: RoleManager },
+                { provide: AsyncPermissionManager, useClass: PermissionManager },
                 AsyncHRBAC,
                 RoleStore,
                 HrbacGuard

@@ -77,7 +77,7 @@ export class AsyncHRBAC extends HierarchicalRoleBaseAccessControl<AsyncRoleManag
         return (await this.getRoleManager().getRecursiveParentsOf(role)).reverse();
     }
     
-    protected getAcesForRolesAndResource(roles : string[], resource : Resource) : Promise<ACE<AsyncAssertion>[]>|ACE<AsyncAssertion>[] {
+    protected getAcesForRolesAndResource(roles : string[], resource : Resource) : Promise<ACE<AsyncAssertion|Assertion>[]>|ACE<AsyncAssertion|Assertion>[] {
         return this.getPermissionManager().getAcesForRolesAndResource(roles, resource)
     }
     

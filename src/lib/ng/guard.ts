@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
-import { HRBAC } from '../hrbac';
+import { AsyncHRBAC } from '../hrbac';
 import { RouteResource } from './route-resource';
 import { RoleStore } from './role-store';
 
 @Injectable()
 export class HrbacGuard implements CanActivate {
   
-  constructor(protected hrbac : HRBAC, protected roleStore : RoleStore) {
+  constructor(protected hrbac : AsyncHRBAC, protected roleStore : RoleStore) {
   
   }
   

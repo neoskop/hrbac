@@ -85,7 +85,7 @@ describe('RoleManager', () => {
     })
 });
 
-describe('RoleManager', () => {
+describe('AsyncRoleManager', () => {
     let roleManager : AsyncRoleManager;
     beforeEach(() => {
         roleManager = new AsyncRoleManagerImpl();

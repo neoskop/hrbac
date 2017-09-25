@@ -6,12 +6,12 @@ export interface IPermissionManager {
 }
 
 export interface IAsyncPermissionManager {
-    getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : Promise<ACE<AsyncAssertion>[]>|ACE<AsyncAssertion>[];
+    getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : Promise<ACE<AsyncAssertion|Assertion>[]>|ACE<AsyncAssertion|Assertion>[];
 }
 
 @Injectable()
 export abstract class AsyncPermissionManager implements  IAsyncPermissionManager {
-    abstract getAcesForRolesAndResource(roles : string[], resource : string | Resource | null) : Promise<ACE<AsyncAssertion>[]>|ACE<AsyncAssertion>[];
+    abstract getAcesForRolesAndResource(roles : string[], resource : string | Resource | null) : Promise<ACE<AsyncAssertion|Assertion>[]>|ACE<AsyncAssertion|Assertion>[];
     
 }
 

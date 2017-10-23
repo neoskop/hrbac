@@ -10,7 +10,7 @@ const globals = {
 };
 
 export default {
-    input: 'ng.js',
+    input: 'lib/ng/index.js',
     output: {
         format: 'umd',
         name: 'neoskop.hrbac.ng',

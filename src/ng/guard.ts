@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
-import { AsyncHRBAC } from '../hrbac';
+import { AsyncHRBAC } from '..';
 import { RouteResource } from './route-resource';
 import { RoleStore } from './role-store';
 

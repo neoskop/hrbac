@@ -21,15 +21,9 @@ export default {
     globals,
     plugins: [
         {
-            resolveId(name, imp) {
-                if(imp) {
-                    const p = path.resolve(path.dirname(imp), name);
-                    const dir = path.dirname(p);
-                    const dirName = path.basename(dir);
-
-                    if(dirName === 'lib') {
-                        return '@neoskop/hrbac';
-                    }
+            resolveId(name) {
+                if('..' === name) {
+                    return '@neoskop/hrbac';
                 }
             }
         },

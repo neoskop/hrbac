@@ -1,4 +1,4 @@
-import { Resource } from '../types';
+import { Resource } from '..';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 export class RouteResource extends Resource {

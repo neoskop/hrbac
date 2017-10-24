@@ -2,10 +2,9 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { AsyncHRBAC } from '../hrbac';
+import { AsyncHRBAC, Role } from '..';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
-import { Role } from "../types";
 import { AllowedPipe, DeniedPipe } from './pipes';
 
 use(sinonChai);

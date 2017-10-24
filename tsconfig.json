@@ -16,7 +16,7 @@
     "sourceMap": true,                        /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     "outDir": "lib",                          /* Redirect output structure to the directory. */
-    "rootDir": "src",                         /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "src",                            /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "removeComments": true,                /* Do not emit comments to output. */
     // "noEmit": true,                        /* Do not emit outputs. */
     "importHelpers": true,                    /* Import emit helpers from 'tslib'. */
@@ -59,18 +59,7 @@
       "./node_modules/@types"
     ]
   },
-  "files": [
-    "src/index.ts",
-    "src/ng/index.ts"
-  ],
   "exclude": [
     "node_modules"
-  ],
-  "angularCompilerOptions": {
-    "genDir": "dist",
-    "debug": false,
-    "skipTemplateCodegen": true,
-    "skipMetadataEmit": false,
-    "strictMetadataEmit": true
-  }
+  ]
 }

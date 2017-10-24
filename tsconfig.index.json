@@ -3,11 +3,13 @@
   "compilerOptions": {
     "module": "es2015"
   },
+  "files": [
+    "src/public_api.ts"
+  ],
   "angularCompilerOptions": {
-    "genDir": "dist",
-    "debug": false,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@neoskop/hrbac",
     "skipTemplateCodegen": true,
-    "skipMetadataEmit": false,
-    "strictMetadataEmit": true
+    "strictMetadataEmit": false
   }
 }

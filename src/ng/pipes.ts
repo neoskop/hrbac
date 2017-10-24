@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { AsyncHRBAC } from '../hrbac';
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs/Subscription';
-import { Resource, Role } from '../types';
+import { Resource, Role , AsyncHRBAC} from '..';
 
 @Injectable()
 export abstract class AbstractPipe implements PipeTransform, OnDestroy {

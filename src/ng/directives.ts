@@ -1,9 +1,8 @@
 import { Directive, Injectable, OnChanges, OnDestroy, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
-import { AsyncHRBAC } from '../hrbac';
 import { NgIf } from '@angular/common';
 import { Subscription } from "rxjs/Subscription";
 import { RoleStore } from "./role-store";
-import { Resource, Role } from '../types';
+import { Resource, Role, AsyncHRBAC } from '..';
 
 @Injectable()
 export abstract class AbstractDirective implements OnChanges, OnDestroy {

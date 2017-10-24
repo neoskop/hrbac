@@ -3,9 +3,9 @@
   "version": "1.0.0-alpha.11",
   "description": "An implementation of a hierarchical role based access control for nodejs and browser.",
   "main": "dist/hrbac.bundle.js",
-  "module": "index.js",
-  "jsnext:main": "index.js",
-  "typings": "index.d.ts",
+  "module": "lib/index.js",
+  "jsnext:main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "scripts": {
     "test:raw": "TS_NODE_CACHE=false mocha --compilers ts:ts-node/register 'src/**/*.spec.ts'",
     "test:watch": "npm run test:raw -- --watch --watch-extension ts",
@@ -14,7 +14,7 @@
     "clean": "rimraf lib dist index.d.ts index.js index.js.map index.metadata.json ng.d.ts ng.js ng.js.map ng.metadata.json",
     "prebuild": "npm run test:coverage",
     "build": "npm run clean && npm run build:ngc && npm run build:rollup:index && npm run build:rollup:ng",
-    "build:ngc": "ngc -p tsconfig.esm.json",
+    "build:ngc": "ngc -p tsconfig.ng.json && ngc -p tsconfig.index.json",
     "build:rollup:index": "rollup -c rollup.index.js",
     "build:rollup:ng": "rollup -c rollup.ng.js"
   },

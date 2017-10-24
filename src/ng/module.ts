@@ -1,12 +1,10 @@
 import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
-import { AsyncPermissionManager, PermissionManager, PermissionTransfer } from '../permission-manager';
-import { Role } from '../types';
+import { AsyncPermissionManager, PermissionManager, PermissionTransfer, AsyncHRBAC, HRBAC, AsyncRoleManager, RoleManager } from '..';
+import { Role } from '..';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
 import { _DEFAULT_ROLE, _PERMISSIONS, _ROLES } from './tokens';
 import { DEFAULT_ROLE, RoleStore } from './role-store';
-import { AsyncHRBAC, HRBAC } from '../hrbac';
-import { AsyncRoleManager, RoleManager } from '../role-manager';
 import { HrbacGuard } from './guard';
 
 export function defaultRoleFactory(role : string = 'guest') {

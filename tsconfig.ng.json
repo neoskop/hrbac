@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "es2015"
+  },
+  "files": [
+    "src/ng/public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@neoskop/hrbac/ng",
+    "skipTemplateCodegen": true,
+    "strictMetadataEmit": false
+  }
+}

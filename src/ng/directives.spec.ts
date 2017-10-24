@@ -3,11 +3,9 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { TemplateRef } from '@angular/core';
-import { AsyncHRBAC } from '../hrbac';
+import { AsyncHRBAC, RoleManager, PermissionManager } from '..';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
-import { RoleManager } from "../role-manager";
-import { PermissionManager } from "../permission-manager";
 import { SinonSpy, spy } from 'sinon';
 
 use(sinonChai);

@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { RoleStore } from "./role-store";
-import { Role } from '../types';
+import { Role } from '..';
 import { spy } from 'sinon';
 
 use(sinonChai);

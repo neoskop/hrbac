@@ -29,7 +29,7 @@ describe('PermissionManager', () => {
         expect(aces[1].assertion!.assert).to.be.equal(assertB);
     });
     
-    it('should export permissions w/o assertions', () => {
+    it('should export permissions', () => {
         permissionManager.allow('roleA', 'resource', 'privA');
         permissionManager.deny('roleB', 'resource', [ 'privB', 'privC' ]);
         permissionManager.allow('roleC', 'resourceC');

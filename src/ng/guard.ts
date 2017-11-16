@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
-import { AsyncHRBAC } from '..';
+import { AsyncHRBAC } from '@neoskop/hrbac';
 import { RouteResource } from './route-resource';
 import { RoleStore } from './role-store';
 
@@ -11,7 +11,7 @@ export class HrbacGuard implements CanActivate {
   
   }
   
-  canActivate(route : ActivatedRouteSnapshot, state : RouterStateSnapshot) : Promise<boolean> | boolean {
+  async canActivate(route : ActivatedRouteSnapshot, state : RouterStateSnapshot) : Promise<boolean> {
     const resourceId : string|undefined = route.data['resourceId'];
     const privilege : string|null = route.data['privilege'] || null;
     
@@ -19,7 +19,7 @@ export class HrbacGuard implements CanActivate {
       throw new Error(`resourceId in route.data required for HrbacGuard, ${JSON.stringify(route.data)} given.`)
     }
     
-    const role = this.roleStore.getRole();
+    const role = await this.roleStore.getRole();
     
     if(!role) {
       throw new Error(`Cannot resolve current role for ${resourceId}`);
@@ -27,6 +27,6 @@ export class HrbacGuard implements CanActivate {
     
     const resource = new RouteResource(resourceId, route, state);
     
-    return this.hrbac.isAllowed(role!, resource, privilege);
+    return await this.hrbac.isAllowed(role!, resource, privilege);
   }
 }

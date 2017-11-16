@@ -1,14 +1,15 @@
-import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform, OnInit } from '@angular/core';
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs/Subscription';
-import { Resource, Role , AsyncHRBAC} from '..';
+import { Resource, Role , AsyncHRBAC} from '@neoskop/hrbac';
 
 @Injectable()
-export abstract class AbstractPipe implements PipeTransform, OnDestroy {
+export abstract class AbstractPipe implements PipeTransform, OnDestroy, OnInit {
     private _latestValue : boolean|null = null;
     private _latestResourceId : string;
     private _latestPrivilege : string|null;
     private _latestRoleId : string;
+    private _role : Role | null;
     
     protected subscription : Subscription;
     
@@ -17,16 +18,22 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy {
     constructor(protected hrbac : AsyncHRBAC,
                 protected roleStore : RoleStore,
                 protected cdr : ChangeDetectorRef) {
-        this.subscription = this.roleStore.roleChange.subscribe(() => {
+        this.subscription = this.roleStore.roleChange.subscribe((role) => {
+            this._role = role;
             this.cdr.markForCheck();
         });
     }
     
-    transform(resource : string | Resource, privilege : string | null = null, role : string | Role | null = null) {
-        role = role || this.roleStore.getRole();
+    async ngOnInit() {
+        this._role = await this.roleStore.getRole();
+        this.cdr.markForCheck();
+    }
     
+    transform(resource : string | Resource, privilege : string | null = null, role : string | Role | null = null) {
+        role = role || this._role;
+        
         if(!role) {
-            throw new Error('Cannot resolve current role');
+            return this._latestValue;
         }
         
         const resourceId = (resource as Resource).resourceId || resource as string;

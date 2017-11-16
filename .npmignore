@@ -7,5 +7,5 @@
 /.coveralls.yml
 /.gitignore
 /.travis.yml
-/tsconfig.json
+/tsconfig.*
 /yarn.lock

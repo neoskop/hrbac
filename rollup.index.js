@@ -2,11 +2,11 @@ import resolve from 'rollup-plugin-node-resolve';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
-    input: 'lib/index.js',
+    input: 'esm5/index.js',
     output: {
         format: 'umd',
         name: 'neoskop.hrbac',
-        file: 'dist/hrbac.bundle.js',
+        file: 'bundle/hrbac.umd.js',
         sourcemap: true
     },
     plugins: [

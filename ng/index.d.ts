@@ -1,1 +1,1 @@
-export * from '../lib/ng';
+export * from '../esm5/ng/index';

@@ -80,7 +80,7 @@ export type PermissionTransfer = [
   string|null,
   [
       string|null,
-      { type: 'allow'|'deny', privileges: string[]|null }[]
+      { type: 'allow'|'deny', privileges: string[]|null, assertion?: AssertionFunction<any, any>|Assertion<any, any>|null|undefined }[]
   ][]
 ][]
 
@@ -136,7 +136,8 @@ export class PermissionManager implements IPermissionManager {
             resource,
             aces.map(ace => ({
                 type: Type.toString(ace.type),
-                privileges: ace.privileges && Array.from(ace.privileges)
+                privileges: ace.privileges && Array.from(ace.privileges),
+                ...(ace.assertion ? { assertion: ace.assertion } : {})
             }))
         ]);
       }
@@ -151,7 +152,7 @@ export class PermissionManager implements IPermissionManager {
     for(const [ role, resources ] of data) {
       for(const [ resource, aces ] of resources) {
         for(const ace of aces) {
-          this.add(Type.fromString(ace.type), role, resource, ace.privileges);
+          this.add(Type.fromString(ace.type), role, resource, ace.privileges, ace.assertion);
         }
       }
     }

@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { HRBAC, Role } from '..';
+import { HRBAC, Role } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { HrbacGuard } from './guard';
@@ -35,21 +35,25 @@ describe('HrbacGuard', () => {
     it('should throw if no resource is provided', () => {
         route.data = {};
         
-        expect(() => {
-            guard.canActivate(route, state);
-        }).to.throw(Error, 'resourceId in route.data required for HrbacGuard, {} given.')
+        guard.canActivate(route, state).then((can) => {
+            expect(can).not.to.exist;
+        }, err => {
+            expect(err).to.be.eql(new Error('resourceId in route.data required for HrbacGuard, {} given.'))
+        })
     });
     
     it('should throw error when role cannot be resolved', () => {
         roleStore.setRole(null);
-        
-        expect(() => {
-            guard.canActivate(route, state);
-        }).to.throw(Error, 'Cannot resolve current role for test-resource')
+    
+        guard.canActivate(route, state).then((can) => {
+            expect(can).not.to.exist;
+        }, err => {
+            expect(err).to.be.eql(new Error('Cannot resolve current role for test-resource'))
+        })
     });
     
-    it('should call hrbac isAllowed and return its value', () => {
-        const result = guard.canActivate(route, state);
+    it('should call hrbac isAllowed and return its value', async () => {
+        const result = await guard.canActivate(route, state);
         
         expect(result).to.be.true;
         expect(hrbac.isAllowed).to.have.been.calledOnce;

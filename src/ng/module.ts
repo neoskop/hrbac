@@ -1,6 +1,5 @@
 import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
-import { AsyncPermissionManager, PermissionManager, PermissionTransfer, AsyncHRBAC, HRBAC, AsyncRoleManager, RoleManager } from '..';
-import { Role } from '..';
+import { AsyncPermissionManager, PermissionManager, PermissionTransfer, AsyncHRBAC, HRBAC, AsyncRoleManager, RoleManager, Role } from '@neoskop/hrbac';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
 import { _DEFAULT_ROLE, _PERMISSIONS, _ROLES } from './tokens';

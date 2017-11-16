@@ -1,4 +1,4 @@
-import { Resource } from '..';
+import { Resource } from '@neoskop/hrbac';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 export class RouteResource extends Resource {

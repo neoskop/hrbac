@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { RoleStore } from "./role-store";
-import { Role } from '..';
+import { Role } from '@neoskop/hrbac';
 import { spy } from 'sinon';
 
 use(sinonChai);

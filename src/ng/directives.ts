@@ -2,7 +2,7 @@ import { Directive, Injectable, OnChanges, OnDestroy, SimpleChanges, TemplateRef
 import { NgIf } from '@angular/common';
 import { Subscription } from "rxjs/Subscription";
 import { RoleStore } from "./role-store";
-import { Resource, Role, AsyncHRBAC } from '..';
+import { Resource, Role, AsyncHRBAC } from '@neoskop/hrbac';
 
 @Injectable()
 export abstract class AbstractDirective implements OnChanges, OnDestroy {
@@ -27,12 +27,12 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
   }
   
   
-  ngOnChanges(_changes : SimpleChanges) : void {
-    this.updateView();
+  ngOnChanges(_changes : SimpleChanges) {
+    return this.updateView();
   }
   
-  updateView() {
-    const role = this.role || this.roleStore.getRole();
+  async updateView() : Promise<void> {
+    const role = this.role || await this.roleStore.getRole();
     if(null == role) {
       throw new Error(`Cannot resolve role`);
     }

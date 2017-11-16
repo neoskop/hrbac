@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { TemplateRef } from '@angular/core';
-import { AsyncHRBAC, RoleManager, PermissionManager } from '..';
+import { AsyncHRBAC, RoleManager, PermissionManager } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
 import { SinonSpy, spy } from 'sinon';
@@ -64,7 +64,7 @@ describe('AllowedDirective', () => {
     it('should display if allowed', async () => {
         directive.resource = 'index';
         
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
         await isVisible();
     });
@@ -72,7 +72,7 @@ describe('AllowedDirective', () => {
     it('should hide if not allowed', async () => {
         directive.resource = 'admin-user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
         await isHidden();
     });
@@ -81,7 +81,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'read';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
     });
@@ -90,7 +90,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
     });
@@ -99,7 +99,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'profil';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
     });
@@ -108,7 +108,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'admin-center';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
     });
@@ -118,7 +118,7 @@ describe('AllowedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'update';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
     });
@@ -128,7 +128,7 @@ describe('AllowedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
     });
@@ -137,21 +137,15 @@ describe('AllowedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
         
         roleStore.setRole('admin');
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
-    });
-    
-    it('should throw error when role cannot be resolved', () => {
-        expect(() => {
-            roleStore.setRole(null);
-        }).to.throw(Error, 'Cannot resolve role');
     });
 });
 
@@ -209,7 +203,7 @@ describe('DeniedDirective', () => {
     it('should hide if allowed', async () => {
         directive.resource = 'index';
         
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
         await isHidden();
     });
@@ -217,7 +211,7 @@ describe('DeniedDirective', () => {
     it('should display if not allowed', async () => {
         directive.resource = 'admin-user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
         await isVisible();
     });
@@ -226,7 +220,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'read';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
     });
@@ -235,7 +229,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
     });
@@ -244,7 +238,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'profil';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
     });
@@ -253,7 +247,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'admin-center';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
     });
@@ -263,7 +257,7 @@ describe('DeniedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'update';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
     });
@@ -273,7 +267,7 @@ describe('DeniedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
     });
@@ -282,21 +276,15 @@ describe('DeniedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isVisible();
         
         roleStore.setRole('admin');
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
         await isHidden();
-    });
-    
-    it('should throw error when role cannot be resolved', async () => {
-        expect(() => {
-            roleStore.setRole(null);
-        }).to.throw(Error, 'Cannot resolve role');
     });
 });
 

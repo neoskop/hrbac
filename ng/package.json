@@ -1,7 +1,7 @@
 {
   "name": "@neoskop/hrbac/ng",
-  "main": "../dist/hrbac-ng.bundle.js",
-  "typings": "../lib/ng/index.d.ts",
-  "module": "../lib/ng/index.js",
-  "jsnext:main": "../lib/ng/index.js"
+  "main": "../bundle/hrbac-ng.umd.js",
+  "typings": "../esm5/ng/index.d.ts",
+  "module": "../esm5/ng/index.js",
+  "es2015": "../esm2015/ng/index.js"
 }

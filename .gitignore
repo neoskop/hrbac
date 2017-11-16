@@ -6,11 +6,14 @@
 /.nyc_output/
 /coverage/
 /.coveralls.yml
+/bundle
+/esm2015
+/esm5
 
-/index.d.ts
+/ng.d.ts
 /index.js
 /index.js.map
-/index.metadata.json
+/ng.metadata.json
 /ng.d.ts
 /ng.js
 /ng.js.map

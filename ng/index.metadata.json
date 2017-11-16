@@ -4,7 +4,7 @@
   "metadata": {},
   "exports": [
     {
-      "from": "../lib/ng/index"
+      "from": "../esm5/ng/index"
     }
   ],
   "flatModuleIndexRedirect": true

@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { AsyncHRBAC, Role } from '..';
+import { AsyncHRBAC, Role } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { AllowedPipe, DeniedPipe } from './pipes';
@@ -19,7 +19,7 @@ describe('AllowedPipe', () => {
     let pipe : AllowedPipe;
     let cdr : any;
     
-    beforeEach(() => {
+    beforeEach(async () => {
         hrbac = createStubInstance(AsyncHRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
         roleStore = new RoleStore('guest');
@@ -27,18 +27,12 @@ describe('AllowedPipe', () => {
             markForCheck: spy()
         }
         pipe = new AllowedPipe(hrbac as any, roleStore, cdr);
+        await pipe.ngOnInit();
+        cdr.markForCheck.reset();
     });
     
     afterEach(() => {
         pipe.ngOnDestroy();
-    })
-    
-    it('should throw error when role cannot be resolved', () => {
-        roleStore.setRole(null);
-        
-        expect(() => {
-            pipe.transform('test-resource');
-        }).to.throw(Error, 'Cannot resolve current role')
     });
     
     it('should call hrbac isAllowed and return comparison to trueValue with role from role store', async () => {
@@ -94,7 +88,7 @@ describe('DeniedPipe', () => {
     let pipe : DeniedPipe;
     let cdr : any;
     
-    beforeEach(() => {
+    beforeEach(async () => {
         hrbac = createStubInstance(AsyncHRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
         roleStore = new RoleStore('guest');
@@ -102,14 +96,8 @@ describe('DeniedPipe', () => {
             markForCheck: spy()
         }
         pipe = new DeniedPipe(hrbac as any, roleStore, cdr);
-    });
-    
-    it('should throw error when role cannot be resolved', () => {
-        roleStore.setRole(null);
-        
-        expect(() => {
-            pipe.transform('test-resource');
-        }).to.throw(Error, 'Cannot resolve current role')
+        await pipe.ngOnInit();
+        cdr.markForCheck.reset();
     });
     
     it('should call hrbac isAllowed and return comparison to trueValue with role from role store', async () => {

@@ -1,7 +1,7 @@
 import 'mocha';
 import 'reflect-metadata';
 import { expect } from 'chai';
-import { HRBAC, AsyncHRBAC } from "./hrbac";
+import { SyncHRBAC, AsyncHRBAC } from "./hrbac";
 import { Resource, Role, AsyncAssertion, AsyncAssertionFunction } from "./types";
 import { RoleManager, AsyncRoleManager } from "./role-manager";
 import { PermissionManager, AsyncPermissionManager, ACE } from './permission-manager';
@@ -71,10 +71,10 @@ const documentA = new DocumentResource('a');
 const profileU = new ProfileResource('u');
 const profileV = new ProfileResource('v');
 
-describe('HRBAC', () => {
-  let hrbac : HRBAC;
+describe('SyncHRBAC', () => {
+  let hrbac : SyncHRBAC;
   beforeEach(() => {
-    hrbac = new HRBAC(new RoleManager(), new PermissionManager());
+    hrbac = new SyncHRBAC(new RoleManager(), new PermissionManager());
     hrbac.getRoleManager().addParents('user', [ 'guest' ]);
     hrbac.getRoleManager().addParents('author', [ 'user' ]);
     hrbac.getRoleManager().addParents('author', [ 'creator' ]);
@@ -89,13 +89,13 @@ describe('HRBAC', () => {
 
     hrbac.getPermissionManager().allow('user', 'document', [ 'list' ]);
     
-    hrbac.getPermissionManager().allow('user', 'profile', null, (_rba: HRBAC, role: UserRole, resource : ProfileResource) => {
+    hrbac.getPermissionManager().allow('user', 'profile', null, (_rba: SyncHRBAC, role: UserRole, resource : ProfileResource) => {
       return role.id === resource.owner;
     });
     hrbac.getPermissionManager().allow('user', 'ffa');
 
     hrbac.getPermissionManager().allow('author', 'document', 'create');
-    hrbac.getPermissionManager().allow('author', 'document', 'update', (_rba : HRBAC, role : UserRole, resource : DocumentResource) => {
+    hrbac.getPermissionManager().allow('author', 'document', 'update', (_rba : SyncHRBAC, role : UserRole, resource : DocumentResource) => {
       return role.id === resource.author;
     });
 

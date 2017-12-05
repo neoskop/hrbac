@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Injectable, OnDestroy, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs/Subscription';
-import { Resource, Role , AsyncHRBAC} from '@neoskop/hrbac';
+import { HRBAC, Resource, Role } from '@neoskop/hrbac';
 
 @Injectable()
 export abstract class AbstractPipe implements PipeTransform, OnDestroy, OnInit {
@@ -15,7 +15,7 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy, OnInit {
     
     protected abstract readonly trueValue : boolean;
     
-    constructor(protected hrbac : AsyncHRBAC,
+    constructor(protected hrbac : HRBAC,
                 protected roleStore : RoleStore,
                 protected cdr : ChangeDetectorRef) {
         this.subscription = this.roleStore.roleChange.subscribe((role) => {

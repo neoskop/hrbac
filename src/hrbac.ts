@@ -19,7 +19,13 @@ export abstract class HierarchicalRoleBaseAccessControl<RM, PM> {
 }
 
 @Injectable()
-export class HRBAC extends HierarchicalRoleBaseAccessControl<RoleManager, PermissionManager> {
+export abstract class HRBAC {
+    abstract isAllowed(role : Role | string, resource : Resource | string, provilege? : string | null) : Promise<boolean> | boolean;
+    abstract isDenied(role : Role | string, resource : Resource | string, provilege? : string | null) : Promise<boolean> | boolean;
+}
+
+@Injectable()
+export class SyncHRBAC extends HierarchicalRoleBaseAccessControl<RoleManager, PermissionManager> {
     
     constructor(roleManager : RoleManager, permissionManager : PermissionManager) {
         super(roleManager, permissionManager);

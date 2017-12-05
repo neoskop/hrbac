@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { HRBAC, Role } from '@neoskop/hrbac';
+import { SyncHRBAC, Role } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { HrbacGuard } from './guard';
@@ -11,14 +11,14 @@ import { RouteResource } from './route-resource';
 use(sinonChai);
 
 describe('HrbacGuard', () => {
-    let hrbac : SinonStubbedInstance<HRBAC>;
+    let hrbac : SinonStubbedInstance<SyncHRBAC>;
     let roleStore : RoleStore;
     let guard : HrbacGuard;
     let route : any;
     let state : any;
     
     beforeEach(() => {
-        hrbac = createStubInstance(HRBAC);
+        hrbac = createStubInstance(SyncHRBAC);
         hrbac.isAllowed.returns(true);
         roleStore = new RoleStore('guest');
         guard = new HrbacGuard(hrbac as any, roleStore);

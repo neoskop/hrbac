@@ -2,7 +2,7 @@ import { Directive, Injectable, OnChanges, OnDestroy, SimpleChanges, TemplateRef
 import { NgIf } from '@angular/common';
 import { Subscription } from "rxjs/Subscription";
 import { RoleStore } from "./role-store";
-import { Resource, Role, AsyncHRBAC } from '@neoskop/hrbac';
+import { Resource, Role, HRBAC } from '@neoskop/hrbac';
 
 @Injectable()
 export abstract class AbstractDirective implements OnChanges, OnDestroy {
@@ -15,7 +15,7 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
   
   protected abstract readonly trueValue : boolean;
   
-  constructor(protected hrbac : AsyncHRBAC,
+  constructor(protected hrbac : HRBAC,
               protected roleStore : RoleStore,
               viewContainer : ViewContainerRef,
               templateRef : TemplateRef<AbstractDirective>) {

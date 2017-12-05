@@ -1,5 +1,15 @@
 import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
-import { AsyncPermissionManager, PermissionManager, PermissionTransfer, AsyncHRBAC, HRBAC, AsyncRoleManager, RoleManager, Role } from '@neoskop/hrbac';
+import {
+    AsyncHRBAC,
+    AsyncPermissionManager,
+    AsyncRoleManager,
+    HRBAC,
+    PermissionManager,
+    PermissionTransfer,
+    Role,
+    RoleManager,
+    SyncHRBAC
+} from '@neoskop/hrbac';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
 import { _DEFAULT_ROLE, _PERMISSIONS, _ROLES } from './tokens';
@@ -53,7 +63,7 @@ export class HrbacChildModule {}
     ]
 })
 export class HrbacRootModule {
-    constructor(protected hrbac: HRBAC,
+    constructor(protected hrbac: SyncHRBAC,
                 @Inject(_ROLES) protected roles : IRoles,
                 @Inject(_PERMISSIONS) protected permissions : PermissionTransfer) {
         if(roles) {
@@ -88,7 +98,8 @@ export class HrbacModule {
                 { provide: _ROLES, useValue: config.roles },
                 { provide: _PERMISSIONS, useValue: config.permissions },
                 { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                HRBAC,
+                SyncHRBAC,
+                { provide: HRBAC, useExisting: SyncHRBAC },
                 RoleManager,
                 PermissionManager,
                 RoleStore,
@@ -106,6 +117,7 @@ export class HrbacModule {
                 { provide: AsyncRoleManager, useClass: RoleManager },
                 { provide: AsyncPermissionManager, useClass: PermissionManager },
                 AsyncHRBAC,
+                { provide: HRBAC, useExisting: AsyncHRBAC },
                 RoleStore,
                 HrbacGuard
             ]

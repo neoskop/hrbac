@@ -1,3 +1,6 @@
+import { Role } from './types';
+import { Resource } from './types';
+
 export function objectEntries<T>(object: { [key: string]: T }) : [ string, T ][] {
     /* istanbul ignore else */
     if(Object.entries) {
@@ -10,4 +13,18 @@ export function objectEntries<T>(object: { [key: string]: T }) : [ string, T ][]
 
 export function Injectable() : ClassDecorator {
     return () => {}
+}
+
+export function assertRoleId(role : Role | string) : string {
+    if(typeof role === 'string') {
+        return role;
+    }
+    return role.roleId;
+}
+
+export function assertResourceId(resource : Resource | string) : string {
+    if(typeof resource === 'string') {
+        return resource;
+    }
+    return resource.resourceId;
 }

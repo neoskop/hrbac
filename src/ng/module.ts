@@ -1,14 +1,12 @@
 import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
 import {
-    AsyncHRBAC,
-    AsyncPermissionManager,
-    AsyncRoleManager,
     HRBAC,
     PermissionManager,
     PermissionTransfer,
     Role,
     RoleManager,
-    SyncHRBAC
+    StaticRoleManager,
+    StaticPermissionManager
 } from '@neoskop/hrbac';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
@@ -63,7 +61,7 @@ export class HrbacChildModule {}
     ]
 })
 export class HrbacRootModule {
-    constructor(protected hrbac: SyncHRBAC,
+    constructor(protected hrbac: HRBAC<StaticRoleManager, StaticPermissionManager>,
                 @Inject(_ROLES) protected roles : IRoles,
                 @Inject(_PERMISSIONS) protected permissions : PermissionTransfer) {
         if(roles) {
@@ -76,18 +74,6 @@ export class HrbacRootModule {
     }
 }
 
-
-@NgModule({
-    imports: [
-        HrbacChildModule
-    ],
-    exports: [
-        HrbacChildModule
-    ]
-})
-export class AsyncHrbacRootModule {}
-
-
 @NgModule({})
 export class HrbacModule {
     static forRoot(config : IHrbacRootConfiguration = {}) : ModuleWithProviders {
@@ -98,26 +84,8 @@ export class HrbacModule {
                 { provide: _ROLES, useValue: config.roles },
                 { provide: _PERMISSIONS, useValue: config.permissions },
                 { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                SyncHRBAC,
-                { provide: HRBAC, useExisting: SyncHRBAC },
-                RoleManager,
-                PermissionManager,
-                RoleStore,
-                HrbacGuard
-            ]
-        }
-    }
-    
-    static forRootAsync(config : IAsyncHrbacRootConfiguration = {}) : ModuleWithProviders {
-        return {
-            ngModule : AsyncHrbacRootModule,
-            providers: [
-                { provide: _DEFAULT_ROLE, useValue: config.defaultRole },
-                { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                { provide: AsyncRoleManager, useClass: RoleManager },
-                { provide: AsyncPermissionManager, useClass: PermissionManager },
-                AsyncHRBAC,
-                { provide: HRBAC, useExisting: AsyncHRBAC },
+                { provide: RoleManager, useClass: StaticRoleManager },
+                { provide: PermissionManager, useClass: StaticPermissionManager },
                 RoleStore,
                 HrbacGuard
             ]

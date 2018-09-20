@@ -1,16 +1,16 @@
 import 'mocha';
 import 'reflect-metadata';
 import { expect } from 'chai';
-import { PermissionManager, Type } from './permission-manager';
-import { AssertionFunction, Assertion, AsyncAssertion } from './types';
+import { StaticPermissionManager, Type } from './permission-manager';
+import { Assertion, AssertionFunction } from './types';
 
 describe('PermissionManager', () => {
-    let permissionManager : PermissionManager;
+    let permissionManager : StaticPermissionManager;
     beforeEach(() => {
-        permissionManager = new PermissionManager();
+        permissionManager = new StaticPermissionManager();
     });
     
-    it('should store and serve permissions', () => {
+    it('should store and serve permissions', async () => {
         const assertA : AssertionFunction = () => true;
         const assertB : AssertionFunction = () => true;
         permissionManager.allow('roleA', 'resource', 'privA', assertA);
@@ -18,7 +18,7 @@ describe('PermissionManager', () => {
         permissionManager.allow('roleC', 'resourceC', null, () => true);
         permissionManager.allow('roleD');
         
-        const aces = permissionManager.getAcesForRolesAndResource([ 'roleA', 'roleB' ], 'resource');
+        const aces = await permissionManager.getAcesForRolesAndResource([ 'roleA', 'roleB' ], 'resource');
         
         expect(aces).to.be.an('array').with.length(2);
         expect(aces[0].type).to.be.equal(Type.Allow);
@@ -53,7 +53,7 @@ describe('PermissionManager', () => {
     
         const exp = permissionManager.export();
         
-        const pm = new PermissionManager();
+        const pm = new StaticPermissionManager();
         
         pm.import(exp);
         
@@ -66,19 +66,5 @@ describe('Assertion', () => {
         const fn = () => true;
         
         expect(new Assertion(fn).assert).to.be.equal(fn);
-    });
-});
-
-describe('AsyncAssertion', () => {
-    it('should create an assertion from sync assertion function', () => {
-        const fn = () => true;
-        
-        expect(new AsyncAssertion(fn).assert).to.be.equal(fn);
-    });
-    
-    it('should create an assertion from async assertion function', () => {
-        const fn = async () => true;
-        
-        expect(new AsyncAssertion(fn).assert).to.be.equal(fn);
     });
 });

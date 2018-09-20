@@ -1,14 +1,14 @@
 import { Directive, Injectable, OnChanges, OnDestroy, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
 import { NgIf } from '@angular/common';
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { RoleStore } from "./role-store";
 import { Resource, Role, HRBAC } from '@neoskop/hrbac';
 
 @Injectable()
 export abstract class AbstractDirective implements OnChanges, OnDestroy {
-  resource : string|Resource;
+  resource? : string|Resource;
   privilege : string|null = null;
-  role : string|Role;
+  role? : string|Role;
   
   protected ngIf : NgIf;
   protected subscription : Subscription;
@@ -36,7 +36,7 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
     if(null == role) {
       throw new Error(`Cannot resolve role`);
     }
-    Promise.resolve(this.hrbac.isAllowed(role!, this.resource, this.privilege)).then(allowed => {
+    Promise.resolve(this.hrbac.isAllowed(role!, this.resource!, this.privilege)).then(allowed => {
       this.ngIf.ngIf = this.trueValue === allowed;
     });
   }

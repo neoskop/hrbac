@@ -1,15 +1,15 @@
 import { ChangeDetectorRef, Injectable, OnDestroy, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { RoleStore } from './role-store';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { HRBAC, Resource, Role } from '@neoskop/hrbac';
 
 @Injectable()
 export abstract class AbstractPipe implements PipeTransform, OnDestroy, OnInit {
     private _latestValue : boolean|null = null;
-    private _latestResourceId : string;
-    private _latestPrivilege : string|null;
-    private _latestRoleId : string;
-    private _role : Role | null;
+    private _latestResourceId? : string;
+    private _latestPrivilege? : string|null;
+    private _latestRoleId? : string;
+    private _role : Role | null = null;
     
     protected subscription : Subscription;
     

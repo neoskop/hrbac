@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { TemplateRef } from '@angular/core';
-import { AsyncHRBAC, RoleManager, PermissionManager } from '@neoskop/hrbac';
+import { HRBAC, StaticPermissionManager, StaticRoleManager } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
 import { SinonSpy, spy } from 'sinon';
@@ -11,7 +11,7 @@ import { SinonSpy, spy } from 'sinon';
 use(sinonChai);
 
 describe('AllowedDirective', () => {
-    let hrbac : AsyncHRBAC;
+    let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : AllowedDirective;
     let viewContainerRef : {
@@ -36,8 +36,8 @@ describe('AllowedDirective', () => {
     }
     
     beforeEach(() => {
-        const pm = new PermissionManager();
-        hrbac = new AsyncHRBAC(new RoleManager() as any, pm as any);
+        const pm = new StaticPermissionManager();
+        hrbac = new HRBAC(new StaticRoleManager() as any, pm as any);
         
         pm.allow('guest', 'index');
         pm.allow('guest', 'comment', [ 'read', 'create' ]);
@@ -150,12 +150,12 @@ describe('AllowedDirective', () => {
 });
 
 describe('DeniedDirective', () => {
-    let hrbac : AsyncHRBAC;
+    let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : DeniedDirective;
     let viewContainerRef : {
-        clear: SinonSpy,
-        createEmbeddedView: SinonSpy
+        clear: sinon.SinonSpy,
+        createEmbeddedView: sinon.SinonSpy
     };
     const templateRef : TemplateRef<DeniedDirective> = {} as any;
     
@@ -175,8 +175,8 @@ describe('DeniedDirective', () => {
     }
     
     beforeEach(() => {
-        const pm = new PermissionManager();
-        hrbac = new AsyncHRBAC(new RoleManager() as any, pm as any);
+        const pm = new StaticPermissionManager();
+        hrbac = new HRBAC(new StaticRoleManager() as any, pm as any);
         
         pm.allow('guest', 'index');
         pm.allow('guest', 'comment', [ 'read', 'create' ]);

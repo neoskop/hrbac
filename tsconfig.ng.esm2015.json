@@ -6,7 +6,7 @@
     "module": "es2015"
   },
   "files": [
-    "src/ng/public-api.ts"
+    "src/ng/public_api.ts"
   ],
   "angularCompilerOptions": {
     "flatModuleOutFile": "index.js",

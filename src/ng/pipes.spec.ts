@@ -2,7 +2,7 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { AsyncHRBAC, Role } from '@neoskop/hrbac';
+import { HRBAC, Role } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { AllowedPipe, DeniedPipe } from './pipes';
@@ -14,13 +14,13 @@ async function wait() {
 }
 
 describe('AllowedPipe', () => {
-    let hrbac : SinonStubbedInstance<AsyncHRBAC>;
+    let hrbac : SinonStubbedInstance<HRBAC>;
     let roleStore : RoleStore;
     let pipe : AllowedPipe;
     let cdr : any;
     
     beforeEach(async () => {
-        hrbac = createStubInstance(AsyncHRBAC);
+        hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
         roleStore = new RoleStore('guest');
         cdr = {
@@ -28,7 +28,7 @@ describe('AllowedPipe', () => {
         }
         pipe = new AllowedPipe(hrbac as any, roleStore, cdr);
         await pipe.ngOnInit();
-        cdr.markForCheck.reset();
+        cdr.markForCheck.resetHistory();
     });
     
     afterEach(() => {
@@ -83,13 +83,13 @@ describe('AllowedPipe', () => {
 });
 
 describe('DeniedPipe', () => {
-    let hrbac : SinonStubbedInstance<AsyncHRBAC>;
+    let hrbac : SinonStubbedInstance<HRBAC>;
     let roleStore : RoleStore;
     let pipe : DeniedPipe;
     let cdr : any;
     
     beforeEach(async () => {
-        hrbac = createStubInstance(AsyncHRBAC);
+        hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
         roleStore = new RoleStore('guest');
         cdr = {
@@ -97,7 +97,7 @@ describe('DeniedPipe', () => {
         }
         pipe = new DeniedPipe(hrbac as any, roleStore, cdr);
         await pipe.ngOnInit();
-        cdr.markForCheck.reset();
+        cdr.markForCheck.resetHistory();
     });
     
     it('should call hrbac isAllowed and return comparison to trueValue with role from role store', async () => {

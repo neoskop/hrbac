@@ -7,14 +7,14 @@ export default {
         format: 'umd',
         name: 'neoskop.hrbac',
         file: 'bundle/hrbac.umd.js',
-        sourcemap: true
+        sourcemap: true,
+        amd: {
+            id: '@neoskop/hrbac'
+        }
     },
     plugins: [
         resolve(),
         sourcemaps()
     ],
-    treeshake: false,
-    amd: {
-        id: '@neoskop/hrbac'
-    }
+    treeshake: false
 }

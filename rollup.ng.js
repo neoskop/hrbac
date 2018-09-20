@@ -16,10 +16,13 @@ export default {
         format: 'umd',
         name: 'neoskop.hrbac.ng',
         file: 'bundle/hrbac-ng.umd.js',
-        sourcemap: true
+        sourcemap: true,
+        globals,
+        amd: {
+            id: '@neoskop/hrbac/ng'
+        }
     },
     external: Object.keys(globals),
-    globals,
     plugins: [/*
         {
             resolveId(name) {
@@ -31,8 +34,5 @@ export default {
         resolve(),
         sourcemaps()
     ],
-    treeshake: false,
-    amd: {
-        id: '@neoskop/hrbac/ng'
-    }
+    treeshake: false
 }

@@ -84,10 +84,13 @@ export class HrbacModule {
                 { provide: _ROLES, useValue: config.roles },
                 { provide: _PERMISSIONS, useValue: config.permissions },
                 { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                { provide: RoleManager, useClass: StaticRoleManager },
-                { provide: PermissionManager, useClass: StaticPermissionManager },
+                StaticRoleManager,
+                StaticPermissionManager,
+                { provide: RoleManager, useExisting: StaticRoleManager },
+                { provide: PermissionManager, useExisting: StaticPermissionManager },
                 RoleStore,
-                HrbacGuard
+                HrbacGuard,
+                HRBAC
             ]
         }
     }

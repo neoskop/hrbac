@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot } from '@angular/router';
 import { HRBAC } from '@neoskop/hrbac';
 import { RouteResource } from './route-resource';
 import { RoleStore } from './role-store';
+import { GUARD_DENY_HANDLER, GuardDenyHandler } from './config';
 
 @Injectable({ providedIn: 'root' })
 export class HrbacGuard implements CanActivate, CanActivateChild {
     
     constructor(protected hrbac : HRBAC,
-                protected roleStore : RoleStore) {
+                protected roleStore : RoleStore,
+                @Inject(GUARD_DENY_HANDLER) protected denyHandler : GuardDenyHandler) {
         
     }
     
@@ -28,7 +30,13 @@ export class HrbacGuard implements CanActivate, CanActivateChild {
         
         const resource = new RouteResource(resourceId, route, state);
         
-        return await this.hrbac.isAllowed(role!, resource, privilege);
+        const isAllowed = await this.hrbac.isAllowed(role!, resource, privilege);
+        
+        if(!isAllowed) {
+            await this.denyHandler({ role, resource, privilege, route, state });
+        }
+        
+        return isAllowed;
     }
     
     

@@ -24,3 +24,7 @@ export function assertResourceId(resource : Resource | string) : string {
     }
     return resource.resourceId;
 }
+
+export function isPlainObject(o : any) : o is Object {
+    return typeof o === 'object' && o.constructor === Object;
+}

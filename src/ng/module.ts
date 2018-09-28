@@ -1,12 +1,24 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { PermissionManager, RoleManager, StaticPermissionManager, StaticRoleManager } from '@neoskop/hrbac';
+import {
+    isPlainObject,
+    PermissionManager,
+    RoleManager,
+    StaticPermissionManager,
+    StaticRoleManager
+} from '@neoskop/hrbac';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
 import { _CONFIG, CONFIG, HrbacConfiguration } from './config';
 
+
 export function configFactory(config : Partial<HrbacConfiguration>) : HrbacConfiguration {
     return {
-        defaultRole: 'guest',
+        defaultRole     : 'guest',
+        guardDenyHandler: {
+            unauthenticated: [ '/login' ],
+            unauthorized: [ '/unauthorized' ],
+            ...(isPlainObject(config.guardDenyHandler) ? config.guardDenyHandler as {} : {})
+        },
         ...config
     }
 }

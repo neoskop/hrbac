@@ -5,7 +5,7 @@ import * as sinonChai from 'sinon-chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { HRBAC, Role } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { createStubInstance, SinonSpy, SinonStubbedInstance, spy } from 'sinon';
 import { HrbacGuard } from './guard';
 import { RouteResource } from './route-resource';
 
@@ -18,12 +18,14 @@ describe('HrbacGuard', () => {
     let guard : HrbacGuard;
     let route : any;
     let state : any;
+    let denyHandler : SinonSpy;
     
     beforeEach(() => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(true);
-        roleStore = new RoleStore({ defaultRole: 'guest' });
-        guard = new HrbacGuard(hrbac as any, roleStore);
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
+        denyHandler = spy();
+        guard = new HrbacGuard(hrbac as any, roleStore, denyHandler);
         
         route = {
             data: {
@@ -50,6 +52,7 @@ describe('HrbacGuard', () => {
         const result = await guard.canActivate(route, state);
 
         expect(result).to.be.true;
+        expect(denyHandler).to.not.have.been.called;
         expect(hrbac.isAllowed).to.have.been.calledOnce;
         expect(hrbac.isAllowed).to.have.been.calledWithExactly(
             new Role('guest'),
@@ -57,6 +60,23 @@ describe('HrbacGuard', () => {
             'test-privilege'
         );
 
-    })
+    });
+    
+    it('should call deny handler on deny', async () => {
+        hrbac.isAllowed.returns(false);
+    
+        const result = await guard.canActivate(route, state);
+        
+        expect(result).to.be.false;
+        
+        expect(denyHandler).to.have.been.calledOnce;
+        expect(denyHandler.getCall(0).args[0]).to.be.eql({
+            route,
+            state,
+            role: new Role('guest'),
+            resource: new RouteResource(route.data.resourceId, route, state),
+            privilege: route.data.privilege
+        });
+    });
 });
 

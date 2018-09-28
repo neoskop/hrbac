@@ -7,23 +7,13 @@
   "es2015": "esm2015/index.js",
   "typings": "esm5/index.d.ts",
   "scripts": {
-    "test:index": "mocha -r ts-node/register 'src/*.spec.ts'",
-    "test:ng": "mocha -r ts-node/register 'src/ng/*.spec.ts'",
-    "test:coverage": "rimraf coverage && nyc -e '.ts' -r html -r text mocha -r ts-node/register 'src/**/*.spec.ts'",
+    "test:coverage": "rimraf coverage && nyc -e '.ts' -r html -r text mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts'",
     "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
-    "clean": "rimraf lib dist bundle esm5 esm2015",
-    "build": "npm run clean && npm run build:index && npm run build:ng",
-    "postbuild": "npm run test",
-    "prebuild:index": "npm run test:index",
-    "prebuild:ng": "npm run test:ng",
-    "build:index": "ngc -p tsconfig.index.esm5.json && ngc -p tsconfig.index.esm2015.json && rollup -c rollup.index.js",
-    "build:ng": "ngc -p tsconfig.ng.esm5.json && ngc -p tsconfig.ng.esm2015.json && rollup -c rollup.ng.js",
-    "_prebuild": "npm run test:coverage",
-    "_build": "npm run clean && npm run build:ngc && npm run build:rollup:index && npm run build:rollup:ng",
-    "_build:ngc": "ngc -p tsconfig.ng.esm5.json && ngc -p tsconfig.index.esm5.json && ngc -p tsconfig.ng.esm2015.json && ngc -p tsconfig.index.esm2015.json",
-    "_build:rollup:index": "rollup -c rollup.index.js",
-    "_build:rollup:ng": "rollup -c rollup.ng.js",
-    "postinstall": "rm -f node_modules/@neoskop/hrbac && mkdir -p node_modules/@neoskop && ln -s ../.. node_modules/@neoskop/hrbac"
+    "clean": "rimraf dist",
+    "prebuild": "npm run test && npm run clean",
+    "build": "ng-packagr -p src/package.json",
+    "publish-please": "publish-please",
+    "prepublishOnly": "publish-please guard"
   },
   "repository": {
     "type": "git",
@@ -70,6 +60,7 @@
     "chai-as-promised": "7.1.1",
     "coveralls": "3.0.2",
     "mocha": "5.2.0",
+    "ng-packagr": "4.2.0",
     "nyc": "13.0.1",
     "rimraf": "2.6.2",
     "rollup": "0.66.1",
@@ -92,5 +83,12 @@
       "lib.es6"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "ngPackage": {
+    "lib": {
+      "entryFile": "src/public_api.ts",
+      "umdModuleIds": {}
+    },
+    "dest": "dist"
+  }
 }

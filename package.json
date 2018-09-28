@@ -12,6 +12,7 @@
     "clean": "rimraf dist",
     "prebuild": "npm run test && npm run clean",
     "build": "ng-packagr -p src/package.json",
+    "postbuild": "node ./bin/dist-version.js",
     "publish-please": "publish-please",
     "prepublishOnly": "publish-please guard"
   },

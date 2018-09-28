@@ -1,39 +1,31 @@
-import { Inject, ModuleWithProviders, NgModule } from '@angular/core';
-import {
-    HRBAC,
-    PermissionManager,
-    PermissionTransfer,
-    Role,
-    RoleManager,
-    StaticRoleManager,
-    StaticPermissionManager
-} from '@neoskop/hrbac';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { PermissionManager, RoleManager, StaticPermissionManager, StaticRoleManager } from '@neoskop/hrbac';
 import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
-import { _DEFAULT_ROLE, _PERMISSIONS, _ROLES } from './tokens';
-import { DEFAULT_ROLE, RoleStore } from './role-store';
-import { HrbacGuard } from './guard';
+import { _CONFIG, CONFIG, HrbacConfiguration } from './config';
 
-export function defaultRoleFactory(role : string = 'guest') {
-    return new Role(role);
+export function configFactory(config : Partial<HrbacConfiguration>) : HrbacConfiguration {
+    return {
+        defaultRole: 'guest',
+        ...config
+    }
 }
 
-export interface IRoles {
-    [role : string] : string[]
+export function roleManagerFactory(roleManager : StaticRoleManager, config : HrbacConfiguration) : RoleManager {
+    if(config.roles) {
+        roleManager.import(config.roles);
+    }
+    
+    return roleManager;
 }
 
-export interface IAsyncHrbacRootConfiguration {
-    defaultRole?: string;
+export function permissionManagerFactory(permissionManager : StaticPermissionManager, config : HrbacConfiguration) : PermissionManager {
+    if(config.permissions) {
+        permissionManager.import(config.permissions);
+    }
+    
+    return permissionManager;
 }
-
-export interface IHrbacRootConfiguration {
-    defaultRole? : string;
-    roles? : IRoles;
-    permissions? : PermissionTransfer;
-}
-
-
-
 
 @NgModule({
     declarations: [
@@ -49,58 +41,16 @@ export interface IHrbacRootConfiguration {
         DeniedPipe
     ]
 })
-export class HrbacChildModule {}
-
-
-@NgModule({
-    imports: [
-        HrbacChildModule
-    ],
-    exports: [
-        HrbacChildModule
-    ]
-})
-export class HrbacRootModule {
-    constructor(protected hrbac: HRBAC<StaticRoleManager, StaticPermissionManager>,
-                @Inject(_ROLES) protected roles : IRoles,
-                @Inject(_PERMISSIONS) protected permissions : PermissionTransfer) {
-        if(roles) {
-            hrbac.getRoleManager().import(roles);
-        }
-
-        if(permissions) {
-            hrbac.getPermissionManager().import(permissions);
-        }
-    }
-}
-
-@NgModule({})
 export class HrbacModule {
-    static forRoot(config : IHrbacRootConfiguration = {}) : ModuleWithProviders {
+    static forRoot(config : Partial<HrbacConfiguration> = {}) : ModuleWithProviders {
         return {
-            ngModule : HrbacRootModule,
+            ngModule : HrbacModule,
             providers: [
-                { provide: _DEFAULT_ROLE, useValue: config.defaultRole },
-                { provide: _ROLES, useValue: config.roles },
-                { provide: _PERMISSIONS, useValue: config.permissions },
-                { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                StaticRoleManager,
-                StaticPermissionManager,
-                { provide: RoleManager, useExisting: StaticRoleManager },
-                { provide: PermissionManager, useExisting: StaticPermissionManager },
-                RoleStore,
-                HrbacGuard,
-                HRBAC
+                { provide: _CONFIG, useValue: config },
+                { provide: CONFIG, useFactory: configFactory, deps: [ _CONFIG ] },
+                { provide: RoleManager, useFactory: roleManagerFactory, deps: [ StaticRoleManager, CONFIG ] },
+                { provide: PermissionManager, useFactory: permissionManagerFactory, deps: [ StaticPermissionManager, CONFIG ] },
             ]
         }
     }
-    
-    static forChild() : ModuleWithProviders {
-        return {
-            ngModule: HrbacChildModule,
-            providers: []
-        }
-    }
-    
-    
 }

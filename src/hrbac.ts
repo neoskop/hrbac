@@ -1,9 +1,9 @@
 import { RoleManager } from './role-manager';
 import { Resource, Role } from "./types";
 import { PermissionManager, Type } from './permission-manager';
-import { Injectable } from './utils';
+import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class HRBAC<RM extends RoleManager = RoleManager,
                    PM extends PermissionManager = PermissionManager> {
     protected readonly roleManager : RM;

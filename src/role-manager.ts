@@ -1,5 +1,6 @@
 import { Role } from './types';
-import { assertRoleId, Injectable, objectEntries } from './utils';
+import { assertRoleId, objectEntries } from './utils';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export abstract class RoleManager {
@@ -34,7 +35,7 @@ export abstract class BaseRoleManager extends RoleManager {
     }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class StaticRoleManager extends BaseRoleManager {
   
   protected roles = new Map<string, Set<string>>();

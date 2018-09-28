@@ -12,15 +12,11 @@ describe('RoleStore', () => {
     let roleStore : RoleStore;
     
     beforeEach(() => {
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' });
     });
     
-    it('should store default role if provided', () => {
+    it('should store default role', () => {
         expect(roleStore.getRole()).to.be.eql(new Role('guest'));
-        
-        roleStore = new RoleStore();
-        
-        expect(roleStore.getRole()).to.be.null;
     });
     
     it('should set store', () => {

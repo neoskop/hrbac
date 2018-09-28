@@ -4,7 +4,7 @@ import { HRBAC } from '@neoskop/hrbac';
 import { RouteResource } from './route-resource';
 import { RoleStore } from './role-store';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class HrbacGuard implements CanActivate, CanActivateChild {
     
     constructor(protected hrbac : HRBAC,

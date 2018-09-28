@@ -22,7 +22,7 @@ describe('HrbacGuard', () => {
     beforeEach(() => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(true);
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' });
         guard = new HrbacGuard(hrbac as any, roleStore);
         
         route = {

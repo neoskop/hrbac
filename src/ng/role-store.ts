@@ -1,20 +1,17 @@
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Role } from '@neoskop/hrbac';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { skip } from 'rxjs/operators';
+import { CONFIG, HrbacConfiguration } from './config';
 
-export const DEFAULT_ROLE = new InjectionToken<string|Role>('DefaultRole');
-
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RoleStore {
   protected _role = new BehaviorSubject<Role|null>(null);
   readonly roleChange : Observable<Role|null> = this._role.pipe(skip(1));
   
   
-  constructor(@Optional() @Inject(DEFAULT_ROLE) role? : string|Role) {
-    if(role) {
-      this.setRole(role);
-    }
+  constructor(@Inject(CONFIG) config : HrbacConfiguration) {
+    this.setRole(config.defaultRole);
   }
   
   setRole(role : string|Role|null) {

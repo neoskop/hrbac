@@ -22,7 +22,7 @@ describe('AllowedPipe', () => {
     beforeEach(async () => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' });
         cdr = {
             markForCheck: spy()
         }
@@ -91,7 +91,7 @@ describe('DeniedPipe', () => {
     beforeEach(async () => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' });
         cdr = {
             markForCheck: spy()
         }

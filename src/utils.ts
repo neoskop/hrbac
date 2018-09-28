@@ -11,10 +11,6 @@ export function objectEntries<T>(object: { [key: string]: T }) : [ string, T ][]
     return Object.keys(object).map<[ string, T ]>(key => [ key, object[key] ]);
 }
 
-export function Injectable() : ClassDecorator {
-    return () => {}
-}
-
 export function assertRoleId(role : Role | string) : string {
     if(typeof role === 'string') {
         return role;

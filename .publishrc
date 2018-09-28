@@ -8,7 +8,7 @@
     "gitTag": true
   },
   "confirm": true,
-  "publishCommand": "(cd dist && npm publish)",
+  "publishCommand": "npm publish dist",
   "publishTag": "latest",
   "prePublishScript": "npm run build",
   "postPublishScript": false

@@ -1,6 +1,7 @@
 import { inject, InjectionToken } from '@angular/core';
-import { PermissionTransfer, Resource, Role } from '@neoskop/hrbac';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { PermissionTransfer, Role } from '@neoskop/hrbac';
+import { Router } from '@angular/router';
+import { RouteResource } from './route-resource';
 
 
 export interface IRoles {
@@ -9,10 +10,8 @@ export interface IRoles {
 
 export interface GuardDenyHandlerArgs {
     role: Role;
-    resource: Resource;
+    resource: RouteResource;
     privilege: string | null;
-    route: ActivatedRouteSnapshot;
-    state : RouterStateSnapshot;
 }
 export interface GuardDenyHandler {
     (args : GuardDenyHandlerArgs) : void|Promise<void>;

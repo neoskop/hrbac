@@ -33,7 +33,7 @@ export class HrbacGuard implements CanActivate, CanActivateChild {
         const isAllowed = await this.hrbac.isAllowed(role!, resource, privilege);
         
         if(!isAllowed) {
-            await this.denyHandler({ role, resource, privilege, route, state });
+            await this.denyHandler({ role, resource, privilege });
         }
         
         return isAllowed;

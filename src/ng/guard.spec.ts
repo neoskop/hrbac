@@ -71,8 +71,6 @@ describe('HrbacGuard', () => {
         
         expect(denyHandler).to.have.been.calledOnce;
         expect(denyHandler.getCall(0).args[0]).to.be.eql({
-            route,
-            state,
             role: new Role('guest'),
             resource: new RouteResource(route.data.resourceId, route, state),
             privilege: route.data.privilege

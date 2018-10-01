@@ -12,7 +12,7 @@ describe('RoleStore', () => {
     let roleStore : RoleStore;
     
     beforeEach(() => {
-        roleStore = new RoleStore({ defaultRole: 'guest' });
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
     });
     
     it('should store default role', () => {

@@ -47,7 +47,7 @@ describe('AllowedDirective', () => {
         
         pm.allow('admin');
         
-        roleStore = new RoleStore({ defaultRole: 'guest' });
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         
         viewContainerRef = {
             clear: spy(function clear() {}),
@@ -186,7 +186,7 @@ describe('DeniedDirective', () => {
         
         pm.allow('admin');
         
-        roleStore = new RoleStore({ defaultRole: 'guest' });
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         
         viewContainerRef = {
             clear: spy(),

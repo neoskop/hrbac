@@ -22,12 +22,11 @@ describe('AllowedPipe', () => {
     beforeEach(async () => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
-        roleStore = new RoleStore({ defaultRole: 'guest' });
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         cdr = {
             markForCheck: spy()
         }
         pipe = new AllowedPipe(hrbac as any, roleStore, cdr);
-        await pipe.ngOnInit();
         cdr.markForCheck.resetHistory();
     });
     
@@ -91,12 +90,11 @@ describe('DeniedPipe', () => {
     beforeEach(async () => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
-        roleStore = new RoleStore({ defaultRole: 'guest' });
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         cdr = {
             markForCheck: spy()
         }
         pipe = new DeniedPipe(hrbac as any, roleStore, cdr);
-        await pipe.ngOnInit();
         cdr.markForCheck.resetHistory();
     });
     

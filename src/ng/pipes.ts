@@ -1,36 +1,33 @@
-import { ChangeDetectorRef, Injectable, OnDestroy, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs';
 import { HRBAC, Resource, Role } from '@neoskop/hrbac';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { startWith } from 'rxjs/operators';
 
 @Injectable()
-export abstract class AbstractPipe implements PipeTransform, OnDestroy, OnInit {
+export abstract class AbstractPipe implements PipeTransform, OnDestroy {
     private _latestValue : boolean|null = null;
     private _latestResourceId? : string;
     private _latestPrivilege? : string|null;
     private _latestRoleId? : string;
-    private _role : Role | null = null;
+    private _role = new BehaviorSubject<Role | null>(null);
     
-    protected subscription : Subscription;
+    protected subscription? : Subscription;
     
     protected abstract readonly trueValue : boolean;
     
     constructor(protected hrbac : HRBAC,
                 protected roleStore : RoleStore,
                 protected cdr : ChangeDetectorRef) {
-        this.subscription = this.roleStore.roleChange.subscribe((role) => {
-            this._role = role;
+        this.roleStore.roleChange.pipe(startWith(this.roleStore.getRole())).subscribe(this._role);
+        this._role.subscribe(() => {
             this.cdr.markForCheck();
-        });
-    }
-    
-    async ngOnInit() {
-        this._role = await this.roleStore.getRole();
-        this.cdr.markForCheck();
+        })
     }
     
     transform(resource : string | Resource, privilege : string | null = null, role : string | Role | null = null) {
-        role = role || this._role;
+        role = role || this._role.value;
         
         if(!role) {
             return this._latestValue;
@@ -56,7 +53,7 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy, OnInit {
     }
     
     ngOnDestroy() : void {
-        this.subscription.unsubscribe();
+        this.subscription && this.subscription.unsubscribe();
     }
 }
 

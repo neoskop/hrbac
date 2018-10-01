@@ -18,6 +18,9 @@ describe('AllowedDirective', () => {
         clear: SinonSpy,
         createEmbeddedView: SinonSpy
     };
+    let cdr : {
+        markForCheck: SinonSpy
+    };
     const templateRef : TemplateRef<AllowedDirective> = {} as any;
     
     
@@ -54,7 +57,11 @@ describe('AllowedDirective', () => {
             createEmbeddedView: spy(function createEmbeddedView() {})
         };
         
-        directive = new AllowedDirective(hrbac, roleStore, viewContainerRef as any, templateRef)
+        cdr = {
+            markForCheck: spy()
+        };
+        
+        directive = new AllowedDirective(hrbac, roleStore, cdr as any, viewContainerRef as any, templateRef)
     });
     
     afterEach(() => {
@@ -157,6 +164,9 @@ describe('DeniedDirective', () => {
         clear: sinon.SinonSpy,
         createEmbeddedView: sinon.SinonSpy
     };
+    let cdr : {
+        markForCheck: SinonSpy
+    };
     const templateRef : TemplateRef<DeniedDirective> = {} as any;
     
     
@@ -192,8 +202,12 @@ describe('DeniedDirective', () => {
             clear: spy(),
             createEmbeddedView: spy()
         };
+    
+        cdr = {
+            markForCheck: spy()
+        };
         
-        directive = new DeniedDirective(hrbac, roleStore, viewContainerRef as any, templateRef)
+        directive = new DeniedDirective(hrbac, roleStore, cdr as any, viewContainerRef as any, templateRef)
     });
     
     afterEach(() => {

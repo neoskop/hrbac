@@ -1,4 +1,4 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { inject, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import {
     isPlainObject,
     PermissionManager,
@@ -25,7 +25,7 @@ export function configFactory(config : Partial<HrbacConfiguration>) : HrbacConfi
 
 export function roleManagerFactory(roleManager : StaticRoleManager, config : HrbacConfiguration) : RoleManager {
     if(config.roles) {
-        roleManager.import(config.roles);
+        roleManager.import(config.roles instanceof InjectionToken ? inject(config.roles) : config.roles);
     }
     
     return roleManager;
@@ -33,7 +33,7 @@ export function roleManagerFactory(roleManager : StaticRoleManager, config : Hrb
 
 export function permissionManagerFactory(permissionManager : StaticPermissionManager, config : HrbacConfiguration) : PermissionManager {
     if(config.permissions) {
-        permissionManager.import(config.permissions);
+        permissionManager.import(config.permissions instanceof InjectionToken ? inject(config.permissions) : config.permissions);
     }
     
     return permissionManager;

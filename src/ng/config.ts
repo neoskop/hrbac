@@ -25,8 +25,8 @@ export interface GuardDenyHandlerConfig {
 export interface HrbacConfiguration {
     defaultRole : string;
     guardDenyHandler: InjectionToken<GuardDenyHandler> | GuardDenyHandlerConfig;
-    roles? : IRoles;
-    permissions? : PermissionTransfer;
+    roles? : IRoles | InjectionToken<IRoles>;
+    permissions? : PermissionTransfer | InjectionToken<PermissionTransfer>;
 }
 
 export function guardDenyHandlerFactory() : GuardDenyHandler {

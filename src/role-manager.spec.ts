@@ -1,42 +1,42 @@
 import 'mocha';
 import 'reflect-metadata';
 import { expect } from 'chai';
-import { RoleManager } from './role-manager';
+import { StaticRoleManager } from './role-manager';
 
 describe('RoleManager', () => {
-    let roleManager : RoleManager;
+    let roleManager : StaticRoleManager;
     beforeEach(() => {
-        roleManager = new RoleManager();
+        roleManager = new StaticRoleManager();
     });
     
-    it('should add parents via addParents', () => {
+    it('should add parents via addParents', async () => {
         roleManager.addParents('a', [ 'b', 'c' ]);
         
-        expect(roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'c' ]));
+        expect(await roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'c' ]));
     
         roleManager.addParents('a', [ 'b', 'd', 'e' ]);
     
-        expect(roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'c', 'd', 'e' ]));
+        expect(await roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'c', 'd', 'e' ]));
     });
     
-    it('should set parents via setParents', () => {
+    it('should set parents via setParents', async () => {
         roleManager.setParents('a', [ 'b', 'c' ]);
         
-        expect(roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'c' ]));
+        expect(await roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'c' ]));
     
         roleManager.setParents('a', [ 'b', 'd', 'e' ]);
     
-        expect(roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'd', 'e' ]));
+        expect(await roleManager.getParents('a')).to.be.eql(new Set([ 'b', 'd', 'e' ]));
     });
     
-    it('should return recursively all parents', () => {
+    it('should return recursively all parents', async () => {
         roleManager.setParents('a', [ 'b', 'c' ]);
         roleManager.setParents('b', [ 'd' ]);
         
-        expect(roleManager.getRecursiveParentsOf('a')).to.be.eql([ 'a', 'b', 'c', 'd' ]);
+        expect(await roleManager.getRecursiveParentsOf('a')).to.be.eql([ 'a', 'b', 'c', 'd' ]);
     });
     
-    it('should export roles', () => {
+    it('should export roles', async () => {
         roleManager.setParents('a', [ 'b', 'c' ]);
         roleManager.setParents('b', [ 'd' ]);
         
@@ -54,10 +54,17 @@ describe('RoleManager', () => {
     
         const exp = roleManager.export();
     
-        const rm = new RoleManager();
+        const rm = new StaticRoleManager();
         
         rm.import(exp);
         
         expect(rm).to.be.eql(roleManager);
+    });
+  
+    it('should consider circular role dependencies', async () => {
+        roleManager.setParents('b', [ 'a', 'c' ]);
+        roleManager.setParents('a', [ 'b' ]);
+        
+        expect(await roleManager.getRecursiveParentsOf('b')).to.be.eql([ 'b', 'a', 'c' ]);
     })
-})
+});

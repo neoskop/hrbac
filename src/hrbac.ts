@@ -1,24 +1,32 @@
-import { Injectable } from '@angular/core';
-import { IRoleManager } from './role-manager';
+import { RoleManager } from './role-manager';
 import { Resource, Role } from "./types";
-import { IPermissionManager, Type } from './permission-manager';
+import { PermissionManager, Type } from './permission-manager';
+import { Injectable } from '@angular/core';
 
-@Injectable()
-export class HierarchicalRoleBaseAccessControl {
+@Injectable({ providedIn: 'root' })
+export class HRBAC<RM extends RoleManager = RoleManager,
+                   PM extends PermissionManager = PermissionManager> {
+    protected readonly roleManager : RM;
+    protected readonly permissionManager : PM;
     
-    constructor(protected readonly roleManager : IRoleManager,
-                protected readonly permissionManager : IPermissionManager) {
+    constructor(roleManager : RoleManager, permissionManager : PermissionManager) {
+        this.roleManager = roleManager as RM;
+        this.permissionManager = permissionManager as PM;
     }
     
-    getRoleManager<R extends IRoleManager>() : R {
-        return this.roleManager as R;
+    getRoleManager() : RM {
+        return this.roleManager;
     }
     
-    getPermissionManager<P extends IPermissionManager>() : P {
-        return this.permissionManager as P;
+    getPermissionManager() : PM {
+        return this.permissionManager;
     }
     
-    isAllowed(role : Role | string, resource : Resource | string, privilege : string | null = null) : boolean {
+    protected async getRecursiveParentsOf(role : Role) : Promise<string[]> {
+        return (await this.getRoleManager().getRecursiveParentsOf(role)).reverse();
+    }
+    
+    async isAllowed(role : Role | string, resource : Resource | string, privilege : string | null = null) : Promise<boolean> {
         if(typeof role === 'string') {
             role = new Role(role);
         }
@@ -26,13 +34,13 @@ export class HierarchicalRoleBaseAccessControl {
             resource = new Resource(resource);
         }
         
-        const roles = this.getRoleManager().getRecursiveParentsOf(role).reverse();
-        const aces = this.getPermissionManager().getAcesForRolesAndResource(roles, resource);
+        const roles = await this.getRecursiveParentsOf(role);
+        const aces = await this.getPermissionManager().getAcesForRolesAndResource(roles, resource);
         
         
         let result : Type = Type.Deny;
         for(const ace of aces) {
-            if(null === ace.assertion || ace.assertion.assert(this, role, resource, privilege)) {
+            if(null === ace.assertion || await ace.assertion.assert(this, role, resource, privilege)) {
                 if(null === privilege) {
                     if(null === ace.privileges) {
                         result = ace.type;
@@ -46,7 +54,7 @@ export class HierarchicalRoleBaseAccessControl {
         return result === Type.Allow;
     }
     
-    isDenied(role : Role | string, resource : Resource | string, privilege? : string | null) : boolean {
-        return !this.isAllowed(role, resource, privilege);
+    async isDenied(role : Role | string, resource : Resource | string, privilege? : string | null) : Promise<boolean> {
+        return !(await this.isAllowed(role, resource, privilege));
     }
 }

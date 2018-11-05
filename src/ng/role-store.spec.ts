@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { RoleStore } from "./role-store";
-import { Role } from '../types';
+import { Role } from '@neoskop/hrbac';
 import { spy } from 'sinon';
 
 use(sinonChai);
@@ -12,15 +12,11 @@ describe('RoleStore', () => {
     let roleStore : RoleStore;
     
     beforeEach(() => {
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
     });
     
-    it('should store default role if provided', () => {
+    it('should store default role', () => {
         expect(roleStore.getRole()).to.be.eql(new Role('guest'));
-        
-        roleStore = new RoleStore();
-        
-        expect(roleStore.getRole()).to.be.null;
     });
     
     it('should set store', () => {

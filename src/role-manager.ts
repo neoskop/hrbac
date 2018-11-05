@@ -1,13 +1,42 @@
-import { Injectable } from '@angular/core';
 import { Role } from './types';
-
-export interface IRoleManager {
-  getParents(role : Role|string) : Set<string>|undefined;
-  getRecursiveParentsOf(role : Role|string) : string[];
-}
+import { assertRoleId, objectEntries } from './utils';
+import { Injectable } from '@angular/core';
 
 @Injectable()
-export class RoleManager implements IRoleManager {
+export abstract class RoleManager {
+    abstract getParents(role : Role|string) : Promise<Set<string>|undefined>|Set<string>|undefined;
+    abstract getRecursiveParentsOf(role : Role|string) : Promise<string[]>|string[];
+}
+
+export abstract class BaseRoleManager extends RoleManager {
+    abstract getParents(role : Role|string) : Promise<Set<string>|undefined>|Set<string>|undefined;
+    async getRecursiveParentsOf(role : Role | string) : Promise<string[]> {
+        const roleId = assertRoleId(role);
+    
+        const queue = [ roleId ];
+        const parents = new Set<string>();
+        let i = 0;
+    
+        while(i < queue.length) {
+            if(parents.has(queue[i])) {
+                ++i;
+                continue;
+            }
+            parents.add(queue[i]);
+        
+            let parentRoles = await this.getParents(queue[i]);
+            if(parentRoles && parentRoles.size > 0) {
+                queue.push(...Array.from(parentRoles!));
+            }
+            ++i;
+        }
+    
+        return Array.from(parents);
+    }
+}
+
+@Injectable({ providedIn: 'root' })
+export class StaticRoleManager extends BaseRoleManager {
   
   protected roles = new Map<string, Set<string>>();
   
@@ -39,25 +68,6 @@ export class RoleManager implements IRoleManager {
     return this.roles.get(roleId);
   }
   
-  getRecursiveParentsOf(role : Role|string) : string[] {
-      const roleId = (role as Role).roleId || role as string;
-
-    const queue = [ roleId ];
-    const parents = new Set<string>();
-    let i = 0;
-
-    while(i < queue.length) {
-      parents.add(queue[i]);
-
-      if(this.roles.has(queue[i])) {
-        queue.push(...Array.from(this.roles.get(queue[i])!));
-      }
-      ++i;
-    }
-
-    return Array.from(parents);
-  }
-  
   export() : { [role : string] : string[] } {
     const data : { [role : string] : string[] } = {};
     
@@ -69,7 +79,7 @@ export class RoleManager implements IRoleManager {
   }
   
   import(data : { [role : string] : string[] }) : void {
-      for(const [ role, parents ] of Object.entries(data)) {
+      for(const [ role, parents ] of objectEntries(data)) {
         this.setParents(role, parents);
       }
   }

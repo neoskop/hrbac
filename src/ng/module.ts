@@ -1,43 +1,43 @@
-import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
-import { RoleManager } from '../role-manager';
-import { PermissionManager, PermissionTransfer } from '../permission-manager';
-import { Role } from '../types';
-import { DEFAULT_ROLE, RoleStore } from './role-store';
-import { HrbacGuard } from "./guard";
-import { AllowedDirective, DeniedDirective } from "./directives";
+import { inject, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import {
+    isPlainObject,
+    PermissionManager,
+    RoleManager,
+    StaticPermissionManager,
+    StaticRoleManager
+} from '@neoskop/hrbac';
+import { AllowedDirective, DeniedDirective } from './directives';
 import { AllowedPipe, DeniedPipe } from './pipes';
+import { _CONFIG, CONFIG, HrbacConfiguration } from './config';
 
-export function defaultRoleFactory(role : string = 'guest') {
-    return new Role(role);
+
+export function configFactory(config : Partial<HrbacConfiguration>) : HrbacConfiguration {
+    return {
+        defaultRole     : 'guest',
+        guardDenyHandler: {
+            unauthenticated: [ '/login' ],
+            unauthorized: [ '/unauthorized' ],
+            ...(isPlainObject(config.guardDenyHandler) ? config.guardDenyHandler as {} : {})
+        },
+        ...config
+    }
 }
 
-export function hrbacFactory(roleManager : RoleManager,
-                             permissionManager : PermissionManager,
-                             roles? : { [role : string] : string[] },
-                             permissions? : PermissionTransfer) {
-    const hrbac = new HierarchicalRoleBaseAccessControl(roleManager, permissionManager);
-    
-    if(roles) {
-        hrbac.getRoleManager<RoleManager>().import(roles);
+export function roleManagerFactory(roleManager : StaticRoleManager, config : HrbacConfiguration) : RoleManager {
+    if(config.roles) {
+        roleManager.import(config.roles instanceof InjectionToken ? inject(config.roles) : config.roles);
     }
     
-    if(permissions) {
-        hrbac.getPermissionManager<PermissionManager>().import(permissions);
+    return roleManager;
+}
+
+export function permissionManagerFactory(permissionManager : StaticPermissionManager, config : HrbacConfiguration) : PermissionManager {
+    if(config.permissions) {
+        permissionManager.import(config.permissions instanceof InjectionToken ? inject(config.permissions) : config.permissions);
     }
     
-    return hrbac;
+    return permissionManager;
 }
-
-export interface IHrbacRootConfiguration {
-    defaultRole? : string;
-    roles? : { [role : string] : string[] };
-    permissions? : PermissionTransfer;
-}
-
-export const _DEFAULT_ROLE = new InjectionToken<string | undefined>('DefaultRole');
-export const _ROLES = new InjectionToken<{ [role : string] : string[] } | undefined>('Roles');
-export const _PERMISSIONS = new InjectionToken<PermissionTransfer | undefined>('Permissions');
 
 @NgModule({
     declarations: [
@@ -54,25 +54,15 @@ export const _PERMISSIONS = new InjectionToken<PermissionTransfer | undefined>('
     ]
 })
 export class HrbacModule {
-    static forRoot(config : IHrbacRootConfiguration = {}) : ModuleWithProviders {
+    static forRoot(config : Partial<HrbacConfiguration> = {}) : ModuleWithProviders {
         return {
             ngModule : HrbacModule,
             providers: [
-                { provide: _DEFAULT_ROLE, useValue: config.defaultRole },
-                { provide: _ROLES, useValue: config.roles },
-                { provide: _PERMISSIONS, useValue: config.permissions },
-                {
-                    provide: HierarchicalRoleBaseAccessControl,
-                    deps: [ RoleManager, PermissionManager, _ROLES, _PERMISSIONS ],
-                    useFactory: hrbacFactory
-                },
-                RoleManager,
-                PermissionManager,
-                RoleStore,
-                { provide: DEFAULT_ROLE, deps: [ _DEFAULT_ROLE ], useFactory: defaultRoleFactory },
-                HrbacGuard
+                { provide: _CONFIG, useValue: config },
+                { provide: CONFIG, useFactory: configFactory, deps: [ _CONFIG ] },
+                { provide: RoleManager, useFactory: roleManagerFactory, deps: [ StaticRoleManager, CONFIG ] },
+                { provide: PermissionManager, useFactory: permissionManagerFactory, deps: [ StaticPermissionManager, CONFIG ] },
             ]
         }
     }
-    
 }

@@ -1,23 +1,32 @@
-import { Directive, Injectable, OnChanges, OnDestroy, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import {
+    ChangeDetectorRef,
+    Directive,
+    Injectable,
+    OnChanges,
+    OnDestroy,
+    SimpleChanges,
+    TemplateRef,
+    ViewContainerRef
+} from '@angular/core';
 import { NgIf } from '@angular/common';
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { RoleStore } from "./role-store";
-import { Resource, Role } from '../types';
+import { Resource, Role, HRBAC } from '@neoskop/hrbac';
 
 @Injectable()
 export abstract class AbstractDirective implements OnChanges, OnDestroy {
-  resource : string|Resource;
+  resource? : string|Resource;
   privilege : string|null = null;
-  role : string|Role;
+  role? : string|Role;
   
   protected ngIf : NgIf;
   protected subscription : Subscription;
   
   protected abstract readonly trueValue : boolean;
   
-  constructor(protected hrbac : HierarchicalRoleBaseAccessControl,
+  constructor(protected hrbac : HRBAC,
               protected roleStore : RoleStore,
+              protected cdr : ChangeDetectorRef,
               viewContainer : ViewContainerRef,
               templateRef : TemplateRef<AbstractDirective>) {
     this.ngIf = new NgIf(viewContainer, templateRef as TemplateRef<any>);
@@ -28,17 +37,19 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
   }
   
   
-  ngOnChanges(_changes : SimpleChanges) : void {
-    this.updateView();
+  ngOnChanges(_changes : SimpleChanges) {
+    return this.updateView();
   }
   
-  updateView() {
+  updateView() : void {
     const role = this.role || this.roleStore.getRole();
     if(null == role) {
       throw new Error(`Cannot resolve role`);
     }
-    this.ngIf.ngIf =
-      this.trueValue === this.hrbac.isAllowed(role!, this.resource, this.privilege);
+    Promise.resolve(this.hrbac.isAllowed(role!, this.resource!, this.privilege)).then(allowed => {
+      this.ngIf.ngIf = this.trueValue === allowed;
+      this.cdr.markForCheck()
+    });
   }
   
   

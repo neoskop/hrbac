@@ -3,31 +3,34 @@ import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
 import { TemplateRef } from '@angular/core';
-import { HierarchicalRoleBaseAccessControl } from '../hrbac';
+import { HRBAC, StaticPermissionManager, StaticRoleManager } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
-import { RoleManager } from "../role-manager";
-import { PermissionManager } from "../permission-manager";
 import { SinonSpy, spy } from 'sinon';
 
 use(sinonChai);
 
 describe('AllowedDirective', () => {
-    let hrbac : HierarchicalRoleBaseAccessControl;
+    let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : AllowedDirective;
     let viewContainerRef : {
         clear: SinonSpy,
         createEmbeddedView: SinonSpy
     };
+    let cdr : {
+        markForCheck: SinonSpy
+    };
     const templateRef : TemplateRef<AllowedDirective> = {} as any;
     
     
-    function isVisible() {
+    async function isVisible() {
+        await wait();
         expect(viewContainerRef.createEmbeddedView).to.have.been.calledAfter(viewContainerRef.clear);
     }
     
-    function isHidden() {
+    async function isHidden() {
+        await wait();
         if(viewContainerRef.createEmbeddedView.callCount) {
             expect(viewContainerRef.clear).to.have.been.calledAfter(viewContainerRef.createEmbeddedView);
         } else {
@@ -36,140 +39,144 @@ describe('AllowedDirective', () => {
     }
     
     beforeEach(() => {
-        hrbac = new HierarchicalRoleBaseAccessControl(new RoleManager(), new PermissionManager());
+        const pm = new StaticPermissionManager();
+        hrbac = new HRBAC(new StaticRoleManager() as any, pm as any);
         
-        hrbac.getPermissionManager().allow('guest', 'index');
-        hrbac.getPermissionManager().allow('guest', 'comment', [ 'read', 'create' ]);
+        pm.allow('guest', 'index');
+        pm.allow('guest', 'comment', [ 'read', 'create' ]);
         
-        hrbac.getPermissionManager().allow('user', 'profil');
-        hrbac.getPermissionManager().allow('user', 'comment', [ 'read', 'create', 'update' ]);
+        pm.allow('user', 'profil');
+        pm.allow('user', 'comment', [ 'read', 'create', 'update' ]);
         
-        hrbac.getPermissionManager().allow('admin');
+        pm.allow('admin');
         
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         
         viewContainerRef = {
-            clear: spy(),
-            createEmbeddedView: spy()
+            clear: spy(function clear() {}),
+            createEmbeddedView: spy(function createEmbeddedView() {})
         };
         
-        directive = new AllowedDirective(hrbac, roleStore, viewContainerRef as any, templateRef)
+        cdr = {
+            markForCheck: spy()
+        };
+        
+        directive = new AllowedDirective(hrbac, roleStore, cdr as any, viewContainerRef as any, templateRef)
     });
     
     afterEach(() => {
         directive.ngOnDestroy();
     });
     
-    it('should display if allowed', () => {
+    it('should display if allowed', async () => {
         directive.resource = 'index';
         
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if not allowed', () => {
+    it('should hide if not allowed', async () => {
         directive.resource = 'admin-user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if allowed with privilege', () => {
+    it('should display if allowed with privilege', async () => {
         directive.resource = 'comment';
         directive.privilege = 'read';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if not allowed with privilege', () => {
+    it('should hide if not allowed with privilege', async () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if allowed with role', () => {
+    it('should display if allowed with role', async () => {
         directive.resource = 'profil';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if not allowed with role', () => {
+    it('should hide if not allowed with role', async () => {
         directive.resource = 'admin-center';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if not allowed with role and privilege', () => {
+    it('should display if not allowed with role and privilege', async () => {
         directive.resource = 'profil';
         directive.role = 'user';
         directive.privilege = 'update';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if not allowed with role and privilege', () => {
+    it('should hide if not allowed with role and privilege', async () => {
         directive.resource = 'comment';
         directive.role = 'user';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
     });
     
-    it('should update after roleUpdate on RoleStore', () => {
+    it('should update after roleUpdate on RoleStore', async () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
         
         roleStore.setRole('admin');
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
-    });
-    
-    it('should throw error when role cannot be resolved', () => {
-        expect(() => {
-            roleStore.setRole(null);
-        }).to.throw(Error, 'Cannot resolve role');
+        await isVisible();
     });
 });
 
 describe('DeniedDirective', () => {
-    let hrbac : HierarchicalRoleBaseAccessControl;
+    let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : DeniedDirective;
     let viewContainerRef : {
-        clear: SinonSpy,
-        createEmbeddedView: SinonSpy
+        clear: sinon.SinonSpy,
+        createEmbeddedView: sinon.SinonSpy
+    };
+    let cdr : {
+        markForCheck: SinonSpy
     };
     const templateRef : TemplateRef<DeniedDirective> = {} as any;
     
     
-    function isVisible() {
+    async function isVisible() {
+        await wait();
         expect(viewContainerRef.createEmbeddedView).to.have.been.calledAfter(viewContainerRef.clear);
     }
     
-    function isHidden() {
+    async function isHidden() {
+        await wait();
         if(viewContainerRef.createEmbeddedView.callCount) {
             expect(viewContainerRef.clear).to.have.been.calledAfter(viewContainerRef.createEmbeddedView);
         } else {
@@ -178,120 +185,123 @@ describe('DeniedDirective', () => {
     }
     
     beforeEach(() => {
-        hrbac = new HierarchicalRoleBaseAccessControl(new RoleManager(), new PermissionManager());
+        const pm = new StaticPermissionManager();
+        hrbac = new HRBAC(new StaticRoleManager() as any, pm as any);
         
-        hrbac.getPermissionManager().allow('guest', 'index');
-        hrbac.getPermissionManager().allow('guest', 'comment', [ 'read', 'create' ]);
+        pm.allow('guest', 'index');
+        pm.allow('guest', 'comment', [ 'read', 'create' ]);
         
-        hrbac.getPermissionManager().allow('user', 'profil');
-        hrbac.getPermissionManager().allow('user', 'comment', [ 'read', 'create', 'update' ]);
+        pm.allow('user', 'profil');
+        pm.allow('user', 'comment', [ 'read', 'create', 'update' ]);
         
-        hrbac.getPermissionManager().allow('admin');
+        pm.allow('admin');
         
-        roleStore = new RoleStore('guest');
+        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         
         viewContainerRef = {
             clear: spy(),
             createEmbeddedView: spy()
         };
+    
+        cdr = {
+            markForCheck: spy()
+        };
         
-        directive = new DeniedDirective(hrbac, roleStore, viewContainerRef as any, templateRef)
+        directive = new DeniedDirective(hrbac, roleStore, cdr as any, viewContainerRef as any, templateRef)
     });
     
     afterEach(() => {
         directive.ngOnDestroy();
     });
     
-    it('should hide if allowed', () => {
+    it('should hide if allowed', async () => {
         directive.resource = 'index';
         
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if not allowed', () => {
+    it('should display if not allowed', async () => {
         directive.resource = 'admin-user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
         
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if allowed with privilege', () => {
+    it('should hide if allowed with privilege', async () => {
         directive.resource = 'comment';
         directive.privilege = 'read';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if not allowed with privilege', () => {
+    it('should display if not allowed with privilege', async () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if allowed with role', () => {
+    it('should hide if allowed with role', async () => {
         directive.resource = 'profil';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if not allowed with role', () => {
+    it('should display if not allowed with role', async () => {
         directive.resource = 'admin-center';
         directive.role = 'user';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
     });
     
-    it('should hide if allowed with role and privilege', () => {
+    it('should hide if allowed with role and privilege', async () => {
         directive.resource = 'profil';
         directive.role = 'user';
         directive.privilege = 'update';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
+        await isHidden();
     });
     
-    it('should display if not allowed with role and privilege', () => {
+    it('should display if not allowed with role and privilege', async () => {
         directive.resource = 'comment';
         directive.role = 'user';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
     });
     
-    it('should update after roleUpdate on RoleStore', () => {
+    it('should update after roleUpdate on RoleStore', async () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isVisible();
+        await isVisible();
         
         roleStore.setRole('admin');
     
-        directive.ngOnChanges(null as any);
+        await directive.ngOnChanges(null as any);
     
-        isHidden();
-    });
-    
-    it('should throw error when role cannot be resolved', () => {
-        expect(() => {
-            roleStore.setRole(null);
-        }).to.throw(Error, 'Cannot resolve role');
+        await isHidden();
     });
 });
+
+function wait() {
+    return new Promise<void>(resolve => setTimeout(() => resolve(), 1));
+}

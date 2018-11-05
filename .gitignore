@@ -2,7 +2,19 @@
 /node_modules/
 
 /lib/
-/lib.es6/
+/dist/
 /.nyc_output/
 /coverage/
 /.coveralls.yml
+/bundle
+/esm2015
+/esm5
+
+/ng.d.ts
+/index.js
+/index.js.map
+/ng.metadata.json
+/ng.d.ts
+/ng.js
+/ng.js.map
+/ng.metadata.json

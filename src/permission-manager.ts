@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
 import { Assertion, AssertionFunction, Resource, Role } from "./types";
+import { Injectable } from '@angular/core';
 
-export interface IPermissionManager {
-    getAcesForRolesAndResource(roles : string[], resource : Resource|string|null) : ACE[];
+@Injectable()
+export abstract class PermissionManager {
+    abstract getAcesForRolesAndResource(roles : string[], resource : string | Resource | null) : Promise<ACE[]>|ACE[];
 }
 
 export enum Type {
@@ -16,7 +17,7 @@ export type TResource = string|null;
 export class ACE {
   constructor(public readonly type : Type,
               public readonly privileges : Set<string>|null,
-              public readonly assertion : Assertion|null) {}
+              public readonly assertion : Assertion<any, any>|null) {}
 }
 
 export class ACL extends Map<TResource, ACE[]>{
@@ -28,8 +29,8 @@ export class ACL extends Map<TResource, ACE[]>{
     this.get(role)!.push(ace);
   }
   
-  static create<K, V>(arr? : [ K, V ][]) : ACL {
-    const map = new Map<K, V>(arr);
+  static create(arr? : [ TResource, ACE[] ][]) : ACL {
+    const map = new Map(arr);
     Object.setPrototypeOf(map, ACL.prototype);
     
     return map as any;
@@ -47,8 +48,8 @@ export class ACLS extends Map<TRole, ACL> {
   }
   
   
-  static create<K, V>(arr? : [ K, V ][]) : ACLS {
-    const map = new Map<K, V>(arr);
+  static create(arr? : [ TRole, ACL ][]) : ACLS {
+    const map = new Map(arr);
     Object.setPrototypeOf(map, ACLS.prototype);
     
     return map as any;
@@ -59,19 +60,19 @@ export type PermissionTransfer = [
   string|null,
   [
       string|null,
-      { type: 'allow'|'deny', privileges: string[]|null }[]
+      { type: 'allow'|'deny'|Type, privileges: string[]|null, assertion?: AssertionFunction<any, any>|Assertion<any, any>|null|undefined }[]
   ][]
 ][]
 
-@Injectable()
-export class PermissionManager implements IPermissionManager {
+@Injectable({ providedIn: 'root' })
+export class StaticPermissionManager extends PermissionManager {
   protected acls = ACLS.create();
   
-  protected add(type : Type,
+  protected add<O extends Role, R extends Resource>(type : Type,
                 role : Role|string|null = null,
                 resource : Resource|string|null = null,
                 privilege : string[]|string|null = null,
-                assertion : AssertionFunction|Assertion|null = null) {
+                assertion : AssertionFunction<O, R>|Assertion<O, R>|null = null) {
     const roleId : TRole = role && (role as Role).roleId || role as string;
     const resourceId : TResource = resource && (resource as Resource).resourceId || resource as string;
     if(typeof assertion === 'function') {
@@ -87,17 +88,17 @@ export class PermissionManager implements IPermissionManager {
     this.acls.get(roleId).add(resourceId, new ACE(type, privileges, assertion));
   }
   
-  allow(role? : Role|string|null,
+  allow<O extends Role, R extends Resource>(role? : Role|string|null,
         resource? : Resource|string|null,
         privilege? : string[]|string|null,
-        assertion? : AssertionFunction|Assertion|null) : void {
+        assertion? : AssertionFunction<O, R>|Assertion<O, R>|null) : void {
     this.add(Type.Allow, role, resource, privilege, assertion);
   }
   
-  deny(role? : Role|string|null,
+  deny<O extends Role, R extends Resource>(role? : Role|string|null,
        resource? : Resource|string|null,
        privilege? : string[]|string|null,
-       assertion? : AssertionFunction|Assertion|null) : void {
+       assertion? : AssertionFunction<O, R>|Assertion<O, R>|null) : void {
     this.add(Type.Deny, role, resource, privilege, assertion);
   }
   
@@ -107,7 +108,7 @@ export class PermissionManager implements IPermissionManager {
     for(const [ role, acl ] of this.acls) {
       const resources : [
           string|null,
-          { type: 'allow'|'deny', privileges: string[]|null }[]
+          { type: 'allow'|'deny'|Type, privileges: string[]|null }[]
           ][] = [];
       
       for(const [ resource, aces ] of acl) {
@@ -115,7 +116,8 @@ export class PermissionManager implements IPermissionManager {
             resource,
             aces.map(ace => ({
                 type: ace.type,
-                privileges: ace.privileges && Array.from(ace.privileges)
+                privileges: ace.privileges && Array.from(ace.privileges),
+                ...(ace.assertion ? { assertion: ace.assertion } : {})
             }))
         ]);
       }
@@ -130,7 +132,7 @@ export class PermissionManager implements IPermissionManager {
     for(const [ role, resources ] of data) {
       for(const [ resource, aces ] of resources) {
         for(const ace of aces) {
-          this.add(ace.type as Type, role, resource, ace.privileges);
+          this.add(ace.type as Type, role, resource, ace.privileges, ace.assertion);
         }
       }
     }

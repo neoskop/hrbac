@@ -1,24 +1,24 @@
 import 'mocha';
 import 'reflect-metadata';
 import { expect } from 'chai';
-import { PermissionManager, Type } from './permission-manager';
-import { AssertionFunction } from './types';
+import { StaticPermissionManager, Type } from './permission-manager';
+import { Assertion, AssertionFunction } from './types';
 
 describe('PermissionManager', () => {
-    let permissionManager : PermissionManager;
+    let permissionManager : StaticPermissionManager;
     beforeEach(() => {
-        permissionManager = new PermissionManager();
+        permissionManager = new StaticPermissionManager();
     });
     
-    it('should store and serve permissions', () => {
+    it('should store and serve permissions', async () => {
         const assertA : AssertionFunction = () => true;
         const assertB : AssertionFunction = () => true;
         permissionManager.allow('roleA', 'resource', 'privA', assertA);
         permissionManager.deny('roleB', 'resource', 'privB', assertB);
-        permissionManager.allow('roleC', 'resourceC');
+        permissionManager.allow('roleC', 'resourceC', null, () => true);
         permissionManager.allow('roleD');
         
-        const aces = permissionManager.getAcesForRolesAndResource([ 'roleA', 'roleB' ], 'resource');
+        const aces = await permissionManager.getAcesForRolesAndResource([ 'roleA', 'roleB' ], 'resource');
         
         expect(aces).to.be.an('array').with.length(2);
         expect(aces[0].type).to.be.equal(Type.Allow);
@@ -29,7 +29,7 @@ describe('PermissionManager', () => {
         expect(aces[1].assertion!.assert).to.be.equal(assertB);
     });
     
-    it('should export permissions w/o assertions', () => {
+    it('should export permissions', () => {
         permissionManager.allow('roleA', 'resource', 'privA');
         permissionManager.deny('roleB', 'resource', [ 'privB', 'privC' ]);
         permissionManager.allow('roleC', 'resourceC');
@@ -53,10 +53,18 @@ describe('PermissionManager', () => {
     
         const exp = permissionManager.export();
         
-        const pm = new PermissionManager();
+        const pm = new StaticPermissionManager();
         
         pm.import(exp);
         
         expect(pm).to.be.eql(permissionManager);
     })
-})
+});
+
+describe('Assertion', () => {
+    it('should create an assertion', () => {
+        const fn = () => true;
+        
+        expect(new Assertion(fn).assert).to.be.equal(fn);
+    });
+});

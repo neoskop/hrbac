@@ -1,0 +1,10 @@
+{
+  "name": "@neoskop/hrbac/ng",
+  "ngPackage": {
+    "lib": {
+      "entryFile": "index.ts",
+      "umdModuleIds": {
+      }
+    }
+  }
+}

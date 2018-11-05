@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-  - "5"
-  - "6"
-  - "7"
   - "8"
   - "node"
 cache: yarn
+before_script:
+  - yarn run build

@@ -1,18 +1,20 @@
 {
   "name": "@neoskop/hrbac",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "description": "An implementation of a hierarchical role based access control for nodejs and browser.",
-  "main": "lib/index.js",
-  "jsnext:main": "lib.es6/index.js",
-  "typings": "lib/index.d.ts",
+  "main": "bundle/hrbac.umd.js",
+  "module": "esm5/index.js",
+  "es2015": "esm2015/index.js",
+  "typings": "esm5/index.d.ts",
   "scripts": {
-    "test:raw": "mocha --compilers ts:ts-node/register src/**/*.spec.ts src/*.spec.ts",
-    "test:watch": "npm run test:raw -- --watch --watch-extension ts",
-    "test:coverage": "nyc -e '.ts' -r html -r text npm run test:raw",
+    "test:coverage": "rimraf coverage && nyc -e '.ts' -r html -r text mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts'",
     "test": "npm run test:coverage && nyc report -r text-lcov | coveralls",
-    "clean": "rimraf lib lib.es6 coverage",
-    "prebuild": "npm run test:coverage",
-    "build": "npm run clean && tsc && ngc -p tsconfig.es6.json"
+    "clean": "rimraf dist",
+    "prebuild": "npm run test && npm run clean",
+    "build": "ng-packagr -p src/package.json",
+    "postbuild": "node ./bin/dist-version.js",
+    "publish-please": "publish-please",
+    "prepublishOnly": "publish-please guard"
   },
   "repository": {
     "type": "git",
@@ -37,37 +39,57 @@
     "url": "https://github.com/neoskop/hrbac/issues"
   },
   "homepage": "https://github.com/neoskop/hrbac#readme",
+  "peerDependencies": {
+    "@angular/common": "^5.0.0",
+    "@angular/core": "^5.0.0",
+    "rxjs": "^5.4.3"
+  },
   "devDependencies": {
-    "@angular/common": "4.3.6",
-    "@angular/compiler": "4.3.6",
-    "@angular/compiler-cli": "4.3.6",
-    "@angular/core": "4.3.6",
-    "@angular/platform-browser": "4.3.6",
-    "@angular/router": "4.3.6",
-    "@types/chai": "4.0.2",
-    "@types/mocha": "2.2.41",
-    "@types/node": "8.0.20",
-    "@types/sinon": "2.3.4",
-    "@types/sinon-chai": "2.7.29",
-    "chai": "4.1.1",
-    "coveralls": "2.13.1",
-    "mocha": "3.5.0",
-    "nyc": "11.1.0",
-    "rimraf": "2.6.1",
-    "rxjs": "5.4.3",
-    "sinon": "3.2.1",
-    "sinon-chai": "2.13.0",
-    "ts-node": "3.3.0",
-    "tslib": "1.7.1",
-    "typescript": "2.4.2",
-    "zone.js": "0.8.17"
+    "@angular/common": "6.1.8",
+    "@angular/compiler": "6.1.8",
+    "@angular/compiler-cli": "6.1.8",
+    "@angular/core": "6.1.8",
+    "@angular/platform-browser": "6.1.8",
+    "@angular/router": "6.1.8",
+    "@types/chai": "4.1.5",
+    "@types/chai-as-promised": "7.1.0",
+    "@types/mocha": "5.2.5",
+    "@types/node": "10.10.1",
+    "@types/sinon": "5.0.2",
+    "@types/sinon-chai": "3.2.0",
+    "chai": "4.1.2",
+    "chai-as-promised": "7.1.1",
+    "coveralls": "3.0.2",
+    "mocha": "5.2.0",
+    "ng-packagr": "4.2.0",
+    "nyc": "13.0.1",
+    "rimraf": "2.6.2",
+    "rollup": "0.66.1",
+    "rollup-plugin-node-resolve": "3.4.0",
+    "rollup-plugin-sourcemaps": "0.4.2",
+    "rxjs": "6.3.2",
+    "sinon": "6.3.4",
+    "sinon-chai": "3.2.0",
+    "ts-node": "7.0.1",
+    "tsconfig-paths": "3.6.0",
+    "tslib": "1.9.3",
+    "typescript": "2.9",
+    "zone.js": "0.8.26"
   },
   "nyc": {
+    "include": "src/**/*.ts",
     "exclude": [
       "**/*.spec.ts",
       "lib",
       "lib.es6"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "ngPackage": {
+    "lib": {
+      "entryFile": "src/public_api.ts",
+      "umdModuleIds": {}
+    },
+    "dest": "dist"
+  }
 }

@@ -40,14 +40,14 @@ export class HRBAC<RM extends RoleManager = RoleManager,
         
         let result : Type = Type.Deny;
         for(const ace of aces) {
-            if(null === ace.assertion || await ace.assertion.assert(this, role, resource, privilege)) {
-                if(null === privilege) {
-                    if(null === ace.privileges) {
+            if(null === privilege) {
+                if(null === ace.privileges) {
+                    if(null === ace.assertion || await ace.assertion.assert(this, role, resource, privilege)) {
                         result = ace.type;
                     }
-                } else if(null === ace.privileges || ace.privileges.has(privilege)) {
-                    result = ace.type;
                 }
+            } else if((null === ace.privileges || ace.privileges.has(privilege)) && (null === ace.assertion || await ace.assertion.assert(this, role, resource, privilege))) {
+                result = ace.type;
             }
         }
         

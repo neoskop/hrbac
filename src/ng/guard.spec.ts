@@ -22,7 +22,7 @@ describe('HrbacGuard', () => {
     
     beforeEach(() => {
         hrbac = createStubInstance(HRBAC);
-        hrbac.isAllowed.returns(true);
+        hrbac.isAllowed.returns(Promise.resolve(true));
         roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         denyHandler = spy();
         guard = new HrbacGuard(hrbac as any, roleStore, denyHandler);
@@ -63,7 +63,7 @@ describe('HrbacGuard', () => {
     });
     
     it('should call deny handler on deny', async () => {
-        hrbac.isAllowed.returns(false);
+        hrbac.isAllowed.returns(Promise.resolve(false));
     
         const result = await guard.canActivate(route, state);
         

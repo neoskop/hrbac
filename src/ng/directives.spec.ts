@@ -53,8 +53,8 @@ describe('AllowedDirective', () => {
         roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         
         viewContainerRef = {
-            clear: spy(function clear() {}),
-            createEmbeddedView: spy(function createEmbeddedView() {})
+            clear: spy(),
+            createEmbeddedView: spy()
         };
         
         cdr = {

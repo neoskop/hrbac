@@ -68,6 +68,14 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
 })
 export class AllowedDirective extends AbstractDirective {
   protected readonly trueValue = true;
+
+  constructor(hrbac : HRBAC,
+    roleStore : RoleStore,
+    cdr : ChangeDetectorRef,
+    viewContainer : ViewContainerRef,
+    templateRef : TemplateRef<AbstractDirective>) {
+    super(hrbac, roleStore, cdr, viewContainer, templateRef);
+  }
 }
 
 @Directive({
@@ -80,6 +88,14 @@ export class AllowedDirective extends AbstractDirective {
 })
 export class DeniedDirective extends AbstractDirective {
   protected readonly trueValue = false;
+
+  constructor(hrbac : HRBAC,
+    roleStore : RoleStore,
+    cdr : ChangeDetectorRef,
+    viewContainer : ViewContainerRef,
+    templateRef : TemplateRef<AbstractDirective>) {
+    super(hrbac, roleStore, cdr, viewContainer, templateRef);
+  }
 }
 
 

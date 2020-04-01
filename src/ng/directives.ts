@@ -57,11 +57,9 @@ export abstract class AbstractDirective implements OnChanges, OnInit, OnDestroy 
   }
 
   protected update(show: boolean) {
-    console.log('update', show, this.viewRef);
     if(show) {
       if(!this.viewRef) {
         this.viewRef = this.viewContainer.createEmbeddedView(this.templateRef);
-        console.log(this.viewRef);
       }
     } else {
       if(this.viewRef) {

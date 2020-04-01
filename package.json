@@ -41,8 +41,8 @@
   },
   "homepage": "https://github.com/neoskop/hrbac#readme",
   "peerDependencies": {
-    "@angular/common": "^8.0.0",
-    "@angular/core": "^8.0.0",
+    "@angular/common": "^9.1.0",
+    "@angular/core": "^9.1.0",
     "rxjs": "^6.5.4"
   },
   "devDependencies": {

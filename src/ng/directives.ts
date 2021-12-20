@@ -1,7 +1,6 @@
 import {
     ChangeDetectorRef,
     Directive,
-    Injectable,
     OnChanges,
     OnDestroy,
     SimpleChanges,
@@ -15,7 +14,7 @@ import { Subscription } from "rxjs";
 import { RoleStore } from "./role-store";
 import { Resource, Role, HRBAC } from '@neoskop/hrbac';
 
-@Injectable()
+@Directive()
 export abstract class AbstractDirective implements OnChanges, OnInit, OnDestroy {
   resource? : string|Resource;
   privilege : string|null = null;

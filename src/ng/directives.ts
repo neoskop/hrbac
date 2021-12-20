@@ -1,25 +1,27 @@
 import {
     ChangeDetectorRef,
     Directive,
-    Injectable,
     OnChanges,
     OnDestroy,
     SimpleChanges,
     TemplateRef,
-    ViewContainerRef
+    ViewContainerRef,
+    ViewRef,
+    OnInit
 } from '@angular/core';
-import { NgIf } from '@angular/common';
+// import { NgIf } from '@angular/common';
 import { Subscription } from "rxjs";
 import { RoleStore } from "./role-store";
 import { Resource, Role, HRBAC } from '@neoskop/hrbac';
 
-@Injectable()
-export abstract class AbstractDirective implements OnChanges, OnDestroy {
+@Directive()
+export abstract class AbstractDirective implements OnChanges, OnInit, OnDestroy {
   resource? : string|Resource;
   privilege : string|null = null;
   role? : string|Role;
+
+  protected viewRef: ViewRef | null = null;
   
-  protected ngIf : NgIf;
   protected subscription : Subscription;
   
   protected abstract readonly trueValue : boolean;
@@ -27,15 +29,16 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
   constructor(protected hrbac : HRBAC,
               protected roleStore : RoleStore,
               protected cdr : ChangeDetectorRef,
-              viewContainer : ViewContainerRef,
-              templateRef : TemplateRef<AbstractDirective>) {
-    this.ngIf = new NgIf(viewContainer, templateRef as TemplateRef<any>);
-    
+              protected viewContainer : ViewContainerRef,
+              protected templateRef : TemplateRef<AbstractDirective>) {
     this.subscription = this.roleStore.roleChange.subscribe(() => {
       this.updateView();
     });
   }
   
+  ngOnInit() {
+    this.updateView();
+  }
   
   ngOnChanges(_changes : SimpleChanges) {
     return this.updateView();
@@ -47,11 +50,23 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
       throw new Error(`Cannot resolve role`);
     }
     Promise.resolve(this.hrbac.isAllowed(role!, this.resource!, this.privilege)).then(allowed => {
-      this.ngIf.ngIf = this.trueValue === allowed;
-      this.cdr.markForCheck()
+      this.update(this.trueValue === allowed);
+      this.cdr.markForCheck();
     });
   }
-  
+
+  protected update(show: boolean) {
+    if(show) {
+      if(!this.viewRef) {
+        this.viewRef = this.viewContainer.createEmbeddedView(this.templateRef);
+      }
+    } else {
+      if(this.viewRef) {
+        this.viewContainer.clear();
+        this.viewRef = null;
+      }
+    }
+  }  
   
   ngOnDestroy() : void {
     this.subscription.unsubscribe();
@@ -68,6 +83,14 @@ export abstract class AbstractDirective implements OnChanges, OnDestroy {
 })
 export class AllowedDirective extends AbstractDirective {
   protected readonly trueValue = true;
+
+  constructor(hrbac : HRBAC,
+    roleStore : RoleStore,
+    cdr : ChangeDetectorRef,
+    viewContainer : ViewContainerRef,
+    templateRef : TemplateRef<AbstractDirective>) {
+    super(hrbac, roleStore, cdr, viewContainer, templateRef);
+  }
 }
 
 @Directive({
@@ -80,6 +103,14 @@ export class AllowedDirective extends AbstractDirective {
 })
 export class DeniedDirective extends AbstractDirective {
   protected readonly trueValue = false;
+
+  constructor(hrbac : HRBAC,
+    roleStore : RoleStore,
+    cdr : ChangeDetectorRef,
+    viewContainer : ViewContainerRef,
+    templateRef : TemplateRef<AbstractDirective>) {
+    super(hrbac, roleStore, cdr, viewContainer, templateRef);
+  }
 }
 
 

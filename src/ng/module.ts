@@ -54,7 +54,7 @@ export function permissionManagerFactory(permissionManager : StaticPermissionMan
     ]
 })
 export class HrbacModule {
-    static forRoot(config : Partial<HrbacConfiguration> = {}) : ModuleWithProviders {
+    static forRoot(config : Partial<HrbacConfiguration> = {}) : ModuleWithProviders<HrbacModule> {
         return {
             ngModule : HrbacModule,
             providers: [

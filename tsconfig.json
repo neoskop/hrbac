@@ -62,6 +62,11 @@
       "./node_modules/@types"
     ]
   },
+  "angularCompilerOptions": {
+    "enableIvy": false,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  },
   "exclude": [
     "node_modules"
   ]

@@ -6,7 +6,7 @@ import { TemplateRef } from '@angular/core';
 import { HRBAC, StaticPermissionManager, StaticRoleManager } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
-import { SinonSpy, spy } from 'sinon';
+import { SinonSpy, spy, fake } from 'sinon';
 
 use(sinonChai);
 
@@ -26,15 +26,16 @@ describe('AllowedDirective', () => {
     
     async function isVisible() {
         await wait();
-        expect(viewContainerRef.createEmbeddedView).to.have.been.calledAfter(viewContainerRef.clear);
+        expect(viewContainerRef.clear).not.to.have.been.called;
+        expect(viewContainerRef.createEmbeddedView).to.have.been.called;
     }
     
     async function isHidden() {
         await wait();
         if(viewContainerRef.createEmbeddedView.callCount) {
-            expect(viewContainerRef.clear).to.have.been.calledAfter(viewContainerRef.createEmbeddedView);
-        } else {
             expect(viewContainerRef.clear).to.have.been.called;
+        } else {
+            expect(viewContainerRef.clear).not.to.have.been.called;
         }
     }
     
@@ -53,10 +54,10 @@ describe('AllowedDirective', () => {
         roleStore = new RoleStore({ defaultRole: 'guest' } as any);
         
         viewContainerRef = {
-            clear: spy(function clear() {}),
-            createEmbeddedView: spy(function createEmbeddedView() {})
+            clear: spy(),
+            createEmbeddedView: fake.returns({})
         };
-        
+
         cdr = {
             markForCheck: spy()
         };
@@ -172,15 +173,16 @@ describe('DeniedDirective', () => {
     
     async function isVisible() {
         await wait();
-        expect(viewContainerRef.createEmbeddedView).to.have.been.calledAfter(viewContainerRef.clear);
+        expect(viewContainerRef.clear).not.to.have.been.called;
+        expect(viewContainerRef.createEmbeddedView).to.have.been.called;
     }
     
     async function isHidden() {
         await wait();
         if(viewContainerRef.createEmbeddedView.callCount) {
-            expect(viewContainerRef.clear).to.have.been.calledAfter(viewContainerRef.createEmbeddedView);
-        } else {
             expect(viewContainerRef.clear).to.have.been.called;
+        } else {
+            expect(viewContainerRef.clear).not.to.have.been.called;
         }
     }
     
@@ -200,9 +202,9 @@ describe('DeniedDirective', () => {
         
         viewContainerRef = {
             clear: spy(),
-            createEmbeddedView: spy()
+            createEmbeddedView: fake.returns({})
         };
-    
+
         cdr = {
             markForCheck: spy()
         };

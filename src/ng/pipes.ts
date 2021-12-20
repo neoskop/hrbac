@@ -2,8 +2,6 @@ import { ChangeDetectorRef, Injectable, OnDestroy, Pipe, PipeTransform } from '@
 import { RoleStore } from './role-store';
 import { Subscription } from 'rxjs';
 import { HRBAC, Resource, Role } from '@neoskop/hrbac';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { startWith } from 'rxjs/operators';
 
 @Injectable()
 export abstract class AbstractPipe implements PipeTransform, OnDestroy {
@@ -11,7 +9,7 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy {
     private _latestResourceId? : string;
     private _latestPrivilege? : string|null;
     private _latestRoleId? : string;
-    private _role = new BehaviorSubject<Role | null>(null);
+    // private _role = new BehaviorSubject<Role | null>(null);
     
     protected subscription? : Subscription;
     
@@ -20,15 +18,14 @@ export abstract class AbstractPipe implements PipeTransform, OnDestroy {
     constructor(protected hrbac : HRBAC,
                 protected roleStore : RoleStore,
                 protected cdr : ChangeDetectorRef) {
-        this.roleStore.roleChange.pipe(startWith(this.roleStore.getRole())).subscribe(this._role);
-        this._role.subscribe(() => {
+        this.roleStore.roleChange.subscribe(() => {
             this.cdr.markForCheck();
         })
     }
     
     transform(resource : string | Resource, privilege : string | null = null, role : string | Role | null = null) {
-        role = role || this._role.value;
-        
+        role = role || this.roleStore.getRole();
+       
         if(!role) {
             return this._latestValue;
         }

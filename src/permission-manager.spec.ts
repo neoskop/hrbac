@@ -18,7 +18,7 @@ describe('PermissionManager', () => {
         permissionManager.allow('roleC', 'resourceC', null, () => true);
         permissionManager.allow('roleD');
         
-        const aces = await permissionManager.getAcesForRolesAndResource([ 'roleA', 'roleB' ], 'resource');
+        const aces = await permissionManager.getAcesForRolesAndResources([ 'roleA', 'roleB' ], ['resource']);
         
         expect(aces).to.be.an('array').with.length(2);
         expect(aces[0].type).to.be.equal(Type.Allow);

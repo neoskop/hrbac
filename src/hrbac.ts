@@ -2,28 +2,40 @@ import { RoleManager } from './role-manager';
 import { Resource, Role } from "./types";
 import { PermissionManager, Type } from './permission-manager';
 import { Injectable } from '@angular/core';
+import { ResourceManager } from 'resource-manager';
 
 @Injectable({ providedIn: 'root' })
-export class HRBAC<RM extends RoleManager = RoleManager,
+export class HRBAC<RolM extends RoleManager = RoleManager,
+                   ResM extends ResourceManager = ResourceManager,
                    PM extends PermissionManager = PermissionManager> {
-    protected readonly roleManager : RM;
+    protected readonly roleManager : RolM;
+    protected readonly resourceManager : ResM;
     protected readonly permissionManager : PM;
     
-    constructor(roleManager : RoleManager, permissionManager : PermissionManager) {
-        this.roleManager = roleManager as RM;
+    constructor(roleManager : RoleManager, resourceManager: ResourceManager, permissionManager : PermissionManager) {
+        this.roleManager = roleManager as RolM;
+        this.resourceManager = resourceManager as ResM;
         this.permissionManager = permissionManager as PM;
     }
     
-    getRoleManager() : RM {
+    getRoleManager() : RolM {
         return this.roleManager;
+    }
+    
+    getResourceManager() : ResM {
+        return this.resourceManager;
     }
     
     getPermissionManager() : PM {
         return this.permissionManager;
     }
     
-    protected async getRecursiveParentsOf(role : Role) : Promise<string[]> {
+    protected async getRecursiveParentRolesOf(role : Role) : Promise<string[]> {
         return (await this.getRoleManager().getRecursiveParentsOf(role)).reverse();
+    }
+    
+    protected async getRecursiveParentResourcesOf(resource : Resource) : Promise<string[]> {
+        return (await this.getResourceManager().getRecursiveParentsOf(resource)).reverse();
     }
     
     async isAllowed(role : Role | string, resource : Resource | string, privilege : string | null = null) : Promise<boolean> {
@@ -34,8 +46,9 @@ export class HRBAC<RM extends RoleManager = RoleManager,
             resource = new Resource(resource);
         }
         
-        const roles = await this.getRecursiveParentsOf(role);
-        const aces = await this.getPermissionManager().getAcesForRolesAndResource(roles, resource);
+        const roles = await this.getRecursiveParentRolesOf(role);
+        const resources = await this.getRecursiveParentResourcesOf(resource);
+        const aces = await this.getPermissionManager().getAcesForRolesAndResources(roles, resources);
         
         
         let result : Type = Type.Deny;

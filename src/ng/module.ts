@@ -2,8 +2,10 @@ import { inject, InjectionToken, ModuleWithProviders, NgModule } from '@angular/
 import {
     isPlainObject,
     PermissionManager,
+    ResourceManager,
     RoleManager,
     StaticPermissionManager,
+    StaticResourceManager,
     StaticRoleManager
 } from '@neoskop/hrbac';
 import { AllowedDirective, DeniedDirective } from './directives';
@@ -29,6 +31,14 @@ export function roleManagerFactory(roleManager : StaticRoleManager, config : Hrb
     }
     
     return roleManager;
+}
+
+export function resourceManagerFactory(resourceManager : StaticResourceManager, config : HrbacConfiguration) : ResourceManager {
+    if(config.resources) {
+        resourceManager.import(config.resources instanceof InjectionToken ? inject(config.resources) : config.resources);
+    }
+    
+    return resourceManager;
 }
 
 export function permissionManagerFactory(permissionManager : StaticPermissionManager, config : HrbacConfiguration) : PermissionManager {
@@ -61,6 +71,7 @@ export class HrbacModule {
                 { provide: _CONFIG, useValue: config },
                 { provide: CONFIG, useFactory: configFactory, deps: [ _CONFIG ] },
                 { provide: RoleManager, useFactory: roleManagerFactory, deps: [ StaticRoleManager, CONFIG ] },
+                { provide: ResourceManager, useFactory: resourceManagerFactory, deps: [ StaticResourceManager, CONFIG ] },
                 { provide: PermissionManager, useFactory: permissionManagerFactory, deps: [ StaticPermissionManager, CONFIG ] },
             ]
         }

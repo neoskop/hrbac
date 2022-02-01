@@ -1,0 +1,70 @@
+import 'mocha';
+import 'reflect-metadata';
+import { expect } from 'chai';
+import { StaticResourceManager } from './resource-manager';
+
+describe('ResourceManager', () => {
+    let resourceManager : StaticResourceManager;
+    beforeEach(() => {
+        resourceManager = new StaticResourceManager();
+    });
+    
+    it('should add parents via addParents', async () => {
+        resourceManager.addParents('a', [ 'b', 'c' ]);
+        
+        expect(await resourceManager.getParents('a')).to.be.eql(new Set([ 'b', 'c' ]));
+    
+        resourceManager.addParents('a', [ 'b', 'd', 'e' ]);
+    
+        expect(await resourceManager.getParents('a')).to.be.eql(new Set([ 'b', 'c', 'd', 'e' ]));
+    });
+    
+    it('should set parents via setParents', async () => {
+        resourceManager.setParents('a', [ 'b', 'c' ]);
+        
+        expect(await resourceManager.getParents('a')).to.be.eql(new Set([ 'b', 'c' ]));
+    
+        resourceManager.setParents('a', [ 'b', 'd', 'e' ]);
+    
+        expect(await resourceManager.getParents('a')).to.be.eql(new Set([ 'b', 'd', 'e' ]));
+    });
+    
+    it('should return recursively all parents', async () => {
+        resourceManager.setParents('a', [ 'b', 'c' ]);
+        resourceManager.setParents('b', [ 'd' ]);
+        
+        expect(await resourceManager.getRecursiveParentsOf('a')).to.be.eql([ 'a', 'b', 'c', 'd' ]);
+    });
+    
+    it('should export resources', async () => {
+        resourceManager.setParents('a', [ 'b', 'c' ]);
+        resourceManager.setParents('b', [ 'd' ]);
+        
+        const exp = resourceManager.export();
+        
+        expect(exp).to.be.eql({
+            a: [ 'b', 'c' ],
+            b: [ 'd' ]
+        });
+    });
+    
+    it('should import resources', () => {
+        resourceManager.setParents('a', [ 'b', 'c' ]);
+        resourceManager.setParents('b', [ 'd' ]);
+    
+        const exp = resourceManager.export();
+    
+        const rm = new StaticResourceManager();
+        
+        rm.import(exp);
+        
+        expect(rm).to.be.eql(resourceManager);
+    });
+  
+    it('should consider circular resource dependencies', async () => {
+        resourceManager.setParents('b', [ 'a', 'c' ]);
+        resourceManager.setParents('a', [ 'b' ]);
+        
+        expect(await resourceManager.getRecursiveParentsOf('b')).to.be.eql([ 'b', 'a', 'c' ]);
+    })
+});

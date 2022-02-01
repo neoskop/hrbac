@@ -2,11 +2,12 @@ import 'mocha';
 import 'reflect-metadata';
 import { expect, use } from 'chai'
 import * as sinonChai from 'sinon-chai';
-import { TemplateRef } from '@angular/core';
-import { HRBAC, StaticPermissionManager, StaticRoleManager } from '@neoskop/hrbac';
+import { ChangeDetectorRef, TemplateRef, ViewContainerRef } from '@angular/core';
+import { HRBAC, StaticPermissionManager, StaticRoleManager, StaticResourceManager } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
 import { SinonSpy, spy, fake } from 'sinon';
+import { HrbacConfiguration } from './config';
 
 use(sinonChai);
 
@@ -41,7 +42,7 @@ describe('AllowedDirective', () => {
     
     beforeEach(() => {
         const pm = new StaticPermissionManager();
-        hrbac = new HRBAC(new StaticRoleManager() as any, pm as any);
+        hrbac = new HRBAC(new StaticRoleManager(), new StaticResourceManager(), pm);
         
         pm.allow('guest', 'index');
         pm.allow('guest', 'comment', [ 'read', 'create' ]);
@@ -51,7 +52,7 @@ describe('AllowedDirective', () => {
         
         pm.allow('admin');
         
-        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
+        roleStore = new RoleStore({ defaultRole: 'guest' } as HrbacConfiguration);
         
         viewContainerRef = {
             clear: spy(),
@@ -62,7 +63,7 @@ describe('AllowedDirective', () => {
             markForCheck: spy()
         };
         
-        directive = new AllowedDirective(hrbac, roleStore, cdr as any, viewContainerRef as any, templateRef)
+        directive = new AllowedDirective(hrbac, roleStore, cdr as unknown as ChangeDetectorRef, viewContainerRef as unknown as ViewContainerRef, templateRef)
     });
     
     afterEach(() => {
@@ -72,7 +73,7 @@ describe('AllowedDirective', () => {
     it('should display if allowed', async () => {
         directive.resource = 'index';
         
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
         
         await isVisible();
     });
@@ -80,7 +81,7 @@ describe('AllowedDirective', () => {
     it('should hide if not allowed', async () => {
         directive.resource = 'admin-user';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
         
         await isHidden();
     });
@@ -89,7 +90,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'read';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -98,7 +99,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });
@@ -107,7 +108,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'profil';
         directive.role = 'user';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -116,7 +117,7 @@ describe('AllowedDirective', () => {
         directive.resource = 'admin-center';
         directive.role = 'user';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });
@@ -126,7 +127,7 @@ describe('AllowedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'update';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -136,7 +137,7 @@ describe('AllowedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'delete';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });
@@ -145,13 +146,13 @@ describe('AllowedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
         
         roleStore.setRole('admin');
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -188,7 +189,7 @@ describe('DeniedDirective', () => {
     
     beforeEach(() => {
         const pm = new StaticPermissionManager();
-        hrbac = new HRBAC(new StaticRoleManager() as any, pm as any);
+        hrbac = new HRBAC(new StaticRoleManager(), new StaticResourceManager(), pm);
         
         pm.allow('guest', 'index');
         pm.allow('guest', 'comment', [ 'read', 'create' ]);
@@ -198,7 +199,7 @@ describe('DeniedDirective', () => {
         
         pm.allow('admin');
         
-        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
+        roleStore = new RoleStore({ defaultRole: 'guest' } as HrbacConfiguration);
         
         viewContainerRef = {
             clear: spy(),
@@ -209,7 +210,7 @@ describe('DeniedDirective', () => {
             markForCheck: spy()
         };
         
-        directive = new DeniedDirective(hrbac, roleStore, cdr as any, viewContainerRef as any, templateRef)
+        directive = new DeniedDirective(hrbac, roleStore, cdr as unknown as ChangeDetectorRef, viewContainerRef as unknown as ViewContainerRef, templateRef)
     });
     
     afterEach(() => {
@@ -219,7 +220,7 @@ describe('DeniedDirective', () => {
     it('should hide if allowed', async () => {
         directive.resource = 'index';
         
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
         
         await isHidden();
     });
@@ -227,7 +228,7 @@ describe('DeniedDirective', () => {
     it('should display if not allowed', async () => {
         directive.resource = 'admin-user';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
         
         await isVisible();
     });
@@ -236,7 +237,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'read';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });
@@ -245,7 +246,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -254,7 +255,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'profil';
         directive.role = 'user';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });
@@ -263,7 +264,7 @@ describe('DeniedDirective', () => {
         directive.resource = 'admin-center';
         directive.role = 'user';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -273,7 +274,7 @@ describe('DeniedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'update';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });
@@ -283,7 +284,7 @@ describe('DeniedDirective', () => {
         directive.role = 'user';
         directive.privilege = 'delete';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
     });
@@ -292,13 +293,13 @@ describe('DeniedDirective', () => {
         directive.resource = 'comment';
         directive.privilege = 'delete';
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isVisible();
         
         roleStore.setRole('admin');
     
-        await directive.ngOnChanges(null as any);
+        await directive.ngOnChanges({});
     
         await isHidden();
     });

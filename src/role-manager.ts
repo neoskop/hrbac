@@ -41,21 +41,21 @@ export class StaticRoleManager extends BaseRoleManager {
   protected roles = new Map<string, Set<string>>();
   
   addParents(role : Role|string, parents : (Role|string)[]) : void {
-    const roleId = (role as Role).roleId || role as string;
+    const roleId = assertRoleId(role);
   
     if(!this.roles.has(roleId)) {
       this.roles.set(roleId, new Set<string>());
     }
   
     for(const parent of parents) {
-      const parentId = (parent as Role).roleId || parent as string;
+      const parentId = assertRoleId(parent);
     
       this.roles.get(roleId)!.add(parentId);
     }
   }
   
   setParents(role : Role|string, parents : (Role|string)[]) : void {
-      const roleId = (role as Role).roleId || role as string;
+      const roleId = assertRoleId(role);
       
       this.roles.delete(roleId);
       
@@ -63,7 +63,7 @@ export class StaticRoleManager extends BaseRoleManager {
   }
   
   getParents(role : Role|string) : Set<string>|undefined {
-      const roleId = (role as Role).roleId || role as string;
+      const roleId = assertRoleId(role);
       
     return this.roles.get(roleId);
   }

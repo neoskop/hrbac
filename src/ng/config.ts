@@ -8,6 +8,10 @@ export interface IRoles {
     [role : string] : string[]
 }
 
+export interface IResources {
+    [role : string] : string[]
+}
+
 export interface GuardDenyHandlerArgs {
     role: Role;
     resource: RouteResource;
@@ -26,6 +30,7 @@ export interface HrbacConfiguration {
     defaultRole : string;
     guardDenyHandler: InjectionToken<GuardDenyHandler> | GuardDenyHandlerConfig;
     roles? : IRoles | InjectionToken<IRoles>;
+    resources? : IResources | InjectionToken<IResources>;
     permissions? : PermissionTransfer | InjectionToken<PermissionTransfer>;
 }
 

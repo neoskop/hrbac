@@ -8,6 +8,7 @@ import { RoleStore } from "./role-store";
 import { createStubInstance, SinonSpy, SinonStubbedInstance, spy } from 'sinon';
 import { HrbacGuard } from './guard';
 import { RouteResource } from './route-resource';
+import { HrbacConfiguration } from './config';
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -23,9 +24,9 @@ describe('HrbacGuard', () => {
     beforeEach(() => {
         hrbac = createStubInstance(HRBAC);
         hrbac.isAllowed.returns(Promise.resolve(true));
-        roleStore = new RoleStore({ defaultRole: 'guest' } as any);
+        roleStore = new RoleStore({ defaultRole: 'guest' } as HrbacConfiguration);
         denyHandler = spy();
-        guard = new HrbacGuard(hrbac as any, roleStore, denyHandler);
+        guard = new HrbacGuard(hrbac as unknown as HRBAC, roleStore, denyHandler);
         
         route = {
             data: {

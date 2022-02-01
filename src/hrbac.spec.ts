@@ -5,6 +5,7 @@ import { HRBAC } from "./hrbac";
 import { Resource, Role } from "./types";
 import { StaticRoleManager } from "./role-manager";
 import { StaticPermissionManager } from './permission-manager';
+import { StaticResourceManager } from './resource-manager';
 
 class DocumentResource extends Resource {
   constructor(public author : string) {
@@ -36,9 +37,9 @@ const profileU = new ProfileResource('u');
 const profileV = new ProfileResource('v');
 
 describe('HRBAC', () => {
-  let hrbac : HRBAC<StaticRoleManager, StaticPermissionManager>;
+  let hrbac : HRBAC<StaticRoleManager, StaticResourceManager, StaticPermissionManager>;
   beforeEach(() => {
-    hrbac = new HRBAC(new StaticRoleManager(), new StaticPermissionManager());
+    hrbac = new HRBAC(new StaticRoleManager(), new StaticResourceManager(), new StaticPermissionManager());
     hrbac.getRoleManager().addParents('user', [ 'guest' ]);
     hrbac.getRoleManager().addParents('author', [ 'user' ]);
     hrbac.getRoleManager().addParents('author', [ 'creator' ]);
@@ -124,5 +125,15 @@ describe('HRBAC', () => {
       expect(await hrbac.isAllowed(authorB, documentA, 'create')).to.be.true;
       expect(await hrbac.isAllowed(authorB, documentA, 'remove')).to.be.false;
     });
+  });
+
+  it('should support resource inheritance', async () => {
+    hrbac = new HRBAC(new StaticRoleManager(), new StaticResourceManager(), new StaticPermissionManager());
+    hrbac.getResourceManager().addParents('child', ['parent']);
+    hrbac.getPermissionManager().deny();
+    hrbac.getPermissionManager().allow('role', 'parent');
+
+    expect(await hrbac.isAllowed('role', 'child')).to.be.true;
+
   })
 });

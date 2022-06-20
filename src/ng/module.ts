@@ -1,5 +1,6 @@
 import { inject, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import {
+    HRBAC,
     isPlainObject,
     PermissionManager,
     ResourceManager,
@@ -61,6 +62,12 @@ export function permissionManagerFactory(permissionManager : StaticPermissionMan
         DeniedDirective,
         AllowedPipe,
         DeniedPipe
+    ],
+    providers: [
+        HRBAC,
+        StaticPermissionManager,
+        StaticResourceManager,
+        StaticRoleManager
     ]
 })
 export class HrbacModule {

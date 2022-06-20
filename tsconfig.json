@@ -16,8 +16,8 @@
 //    "declarationDir": "lib",
     "sourceMap": true,                        /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-//    "outDir": "dist",                          /* Redirect output structure to the directory. */
-    "rootDir": "src",                            /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "outDir": "dist/cjs",                     /* Redirect output structure to the directory. */
+    "rootDir": "src",                         /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "removeComments": true,                /* Do not emit comments to output. */
     // "noEmit": true,                        /* Do not emit outputs. */
     "importHelpers": true,                    /* Import emit helpers from 'tslib'. */
@@ -41,7 +41,7 @@
     "moduleResolution": "node",               /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     "baseUrl": "src",                         /* Base directory to resolve non-absolute module names. */
     "paths": {
-      "@neoskop/hrbac": [ "./public_api.ts" ]
+      "@neoskop/hrbac": [ "./src/index.ts" ]
     },                                        /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                       /* List of folders to include type definitions from. */
@@ -69,5 +69,8 @@
   },
   "exclude": [
     "node_modules"
+  ],
+  "files": [
+    "src/index.ts"
   ]
 }

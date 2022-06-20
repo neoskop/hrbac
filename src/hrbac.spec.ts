@@ -1,6 +1,4 @@
-import 'mocha';
 import 'reflect-metadata';
-import { expect } from 'chai';
 import { HRBAC } from "./hrbac";
 import { Resource, Role } from "./types";
 import { StaticRoleManager } from "./role-manager";
@@ -71,59 +69,59 @@ describe('HRBAC', () => {
 
   describe('permissions', () => {
     it('guest', async () => {
-      expect(await hrbac.isAllowed('guest', documentA, 'read')).to.be.true;
-      expect(await hrbac.isDenied('guest', documentA, 'read')).to.be.false;
-      expect(await hrbac.isAllowed('guest', documentA, 'update')).to.be.false;
-      expect(await hrbac.isDenied('guest', documentA, 'update')).to.be.true;
+      expect(await hrbac.isAllowed('guest', documentA, 'read')).toBeTruthy();
+      expect(await hrbac.isDenied('guest', documentA, 'read')).toBeFalsy();
+      expect(await hrbac.isAllowed('guest', documentA, 'update')).toBeFalsy();
+      expect(await hrbac.isDenied('guest', documentA, 'update')).toBeTruthy();
     });
 
     it('admin', async () => {
-      expect(await hrbac.isAllowed(admin, 'settings')).to.be.true;
-      expect(await hrbac.isDenied(admin, 'settings')).to.be.false;
+      expect(await hrbac.isAllowed(admin, 'settings')).toBeTruthy();
+      expect(await hrbac.isDenied(admin, 'settings')).toBeFalsy();
     });
 
     it('user', async () => {
-      expect(await hrbac.isAllowed(user, documentA, 'read')).to.be.true;
-      expect(await hrbac.isDenied(user, documentA, 'read')).to.be.false;
-      expect(await hrbac.isAllowed(user, documentA, 'list')).to.be.true;
-      expect(await hrbac.isDenied(user, documentA, 'list')).to.be.false;
-      expect(await hrbac.isAllowed(user, documentA, 'update')).to.be.false;
-      expect(await hrbac.isDenied(user, documentA, 'update')).to.be.true;
+      expect(await hrbac.isAllowed(user, documentA, 'read')).toBeTruthy();
+      expect(await hrbac.isDenied(user, documentA, 'read')).toBeFalsy();
+      expect(await hrbac.isAllowed(user, documentA, 'list')).toBeTruthy();
+      expect(await hrbac.isDenied(user, documentA, 'list')).toBeFalsy();
+      expect(await hrbac.isAllowed(user, documentA, 'update')).toBeFalsy();
+      expect(await hrbac.isDenied(user, documentA, 'update')).toBeTruthy();
 
-      expect(await hrbac.isAllowed(user, 'ffa')).to.be.true;
-      expect(await hrbac.isAllowed(userV, 'ffa')).to.be.true;
+      expect(await hrbac.isAllowed(user, 'ffa')).toBeTruthy();
+      expect(await hrbac.isAllowed(userV, 'ffa')).toBeTruthy();
       
-      expect(await hrbac.isAllowed(user, profileU)).to.be.true;
-      expect(await hrbac.isAllowed(user, profileV)).to.be.false;
+      expect(await hrbac.isAllowed(user, profileU)).toBeTruthy();
+      expect(await hrbac.isAllowed(user, profileV)).toBeFalsy();
       
-      expect(await hrbac.isAllowed(user, documentA)).to.be.false;
+      expect(await hrbac.isAllowed(user, documentA)).toBeFalsy();
     });
 
     it('editor', async () => {
-      expect(await hrbac.isAllowed(editor, documentA, 'read')).to.be.true;
-      expect(await hrbac.isDenied(editor, documentA, 'read')).to.be.false;
-      expect(await hrbac.isAllowed(editor, documentA, 'list')).to.be.true;
-      expect(await hrbac.isDenied(editor, documentA, 'list')).to.be.false;
-      expect(await hrbac.isAllowed(editor, documentA, 'update')).to.be.true;
-      expect(await hrbac.isDenied(editor, documentA, 'update')).to.be.false;
-      expect(await hrbac.isAllowed(editor, documentA, 'create')).to.be.false;
-      expect(await hrbac.isDenied(editor, documentA, 'create')).to.be.true;
-      expect(await hrbac.isAllowed(editor, documentA, 'remove')).to.be.false;
-      expect(await hrbac.isDenied(editor, documentA, 'remove')).to.be.true;
+      expect(await hrbac.isAllowed(editor, documentA, 'read')).toBeTruthy();
+      expect(await hrbac.isDenied(editor, documentA, 'read')).toBeFalsy();
+      expect(await hrbac.isAllowed(editor, documentA, 'list')).toBeTruthy();
+      expect(await hrbac.isDenied(editor, documentA, 'list')).toBeFalsy();
+      expect(await hrbac.isAllowed(editor, documentA, 'update')).toBeTruthy();
+      expect(await hrbac.isDenied(editor, documentA, 'update')).toBeFalsy();
+      expect(await hrbac.isAllowed(editor, documentA, 'create')).toBeFalsy();
+      expect(await hrbac.isDenied(editor, documentA, 'create')).toBeTruthy();
+      expect(await hrbac.isAllowed(editor, documentA, 'remove')).toBeFalsy();
+      expect(await hrbac.isDenied(editor, documentA, 'remove')).toBeTruthy();
     });
 
     it('author', async () => {
-      expect(await hrbac.isAllowed(authorA, documentA, 'read')).to.be.true;
-      expect(await hrbac.isAllowed(authorA, documentA, 'list')).to.be.true;
-      expect(await hrbac.isAllowed(authorA, documentA, 'update')).to.be.true;
-      expect(await hrbac.isAllowed(authorA, documentA, 'create')).to.be.true;
-      expect(await hrbac.isAllowed(authorA, documentA, 'remove')).to.be.false;
+      expect(await hrbac.isAllowed(authorA, documentA, 'read')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorA, documentA, 'list')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorA, documentA, 'update')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorA, documentA, 'create')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorA, documentA, 'remove')).toBeFalsy();
 
-      expect(await hrbac.isAllowed(authorB, documentA, 'read')).to.be.true;
-      expect(await hrbac.isAllowed(authorB, documentA, 'list')).to.be.true;
-      expect(await hrbac.isAllowed(authorB, documentA, 'update')).to.be.false;
-      expect(await hrbac.isAllowed(authorB, documentA, 'create')).to.be.true;
-      expect(await hrbac.isAllowed(authorB, documentA, 'remove')).to.be.false;
+      expect(await hrbac.isAllowed(authorB, documentA, 'read')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorB, documentA, 'list')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorB, documentA, 'update')).toBeFalsy();
+      expect(await hrbac.isAllowed(authorB, documentA, 'create')).toBeTruthy();
+      expect(await hrbac.isAllowed(authorB, documentA, 'remove')).toBeFalsy();
     });
   });
 
@@ -133,7 +131,7 @@ describe('HRBAC', () => {
     hrbac.getPermissionManager().deny();
     hrbac.getPermissionManager().allow('role', 'parent');
 
-    expect(await hrbac.isAllowed('role', 'child')).to.be.true;
+    expect(await hrbac.isAllowed('role', 'child')).toBeTruthy();
 
   })
 });

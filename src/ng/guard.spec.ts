@@ -1,31 +1,24 @@
-import 'mocha';
 import 'reflect-metadata';
-import { expect, use } from 'chai'
-import * as sinonChai from 'sinon-chai';
-import * as chaiAsPromised from 'chai-as-promised';
 import { HRBAC, Role } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
-import { createStubInstance, SinonSpy, SinonStubbedInstance, spy } from 'sinon';
 import { HrbacGuard } from './guard';
 import { RouteResource } from './route-resource';
 import { HrbacConfiguration } from './config';
 
-use(sinonChai);
-use(chaiAsPromised);
-
 describe('HrbacGuard', () => {
-    let hrbac : SinonStubbedInstance<HRBAC>;
+    let hrbac : jest.Mocked<HRBAC>;
     let roleStore : RoleStore;
     let guard : HrbacGuard;
     let route : any;
     let state : any;
-    let denyHandler : SinonSpy;
+    let denyHandler : jest.Mock;
     
     beforeEach(() => {
-        hrbac = createStubInstance(HRBAC);
-        hrbac.isAllowed.returns(Promise.resolve(true));
+        hrbac = {
+            isAllowed: jest.fn().mockResolvedValue(true)
+        } as unknown as jest.Mocked<HRBAC>;
         roleStore = new RoleStore({ defaultRole: 'guest' } as HrbacConfiguration);
-        denyHandler = spy();
+        denyHandler = jest.fn();
         guard = new HrbacGuard(hrbac as unknown as HRBAC, roleStore, denyHandler);
         
         route = {
@@ -40,22 +33,22 @@ describe('HrbacGuard', () => {
     it('should throw if no resource is provided', () => {
         route.data = {};
         
-        return expect(guard.canActivate(route, state)).to.eventually.rejectedWith(Error, 'resourceId in route.data required for HrbacGuard, {} given.');
+        return expect(guard.canActivate(route, state)).rejects.toEqual(new Error('resourceId in route.data required for HrbacGuard, {} given.'));
     });
     
     it('should throw error when role cannot be resolved', () => {
         roleStore.setRole(null);
 
-        return expect(guard.canActivate(route, state)).to.eventually.rejectedWith(Error, 'Cannot resolve current role for test-resource');
+        return expect(guard.canActivate(route, state)).rejects.toEqual(new Error('Cannot resolve current role for test-resource'));
     });
 
     it('should call hrbac isAllowed and return its value', async () => {
         const result = await guard.canActivate(route, state);
 
-        expect(result).to.be.true;
-        expect(denyHandler).to.not.have.been.called;
-        expect(hrbac.isAllowed).to.have.been.calledOnce;
-        expect(hrbac.isAllowed).to.have.been.calledWithExactly(
+        expect(result).toBeTruthy();
+        expect(denyHandler).not.toHaveBeenCalled();
+        expect(hrbac.isAllowed).toHaveBeenCalledTimes(1);
+        expect(hrbac.isAllowed).toHaveBeenCalledWith(
             new Role('guest'),
             new RouteResource('test-resource', route, state),
             'test-privilege'
@@ -64,14 +57,14 @@ describe('HrbacGuard', () => {
     });
     
     it('should call deny handler on deny', async () => {
-        hrbac.isAllowed.returns(Promise.resolve(false));
+        hrbac.isAllowed.mockResolvedValue(false);
     
         const result = await guard.canActivate(route, state);
         
-        expect(result).to.be.false;
+        expect(result).toBeFalsy();
         
-        expect(denyHandler).to.have.been.calledOnce;
-        expect(denyHandler.getCall(0).args[0]).to.be.eql({
+        expect(denyHandler).toHaveBeenCalledTimes(1);
+        expect(denyHandler.mock.calls[0].args[0]).toEqual({
             role: new Role('guest'),
             resource: new RouteResource(route.data.resourceId, route, state),
             privilege: route.data.privilege

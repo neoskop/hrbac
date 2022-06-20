@@ -7,8 +7,8 @@
   "es2015": "esm2015/index.js",
   "typings": "esm5/index.d.ts",
   "scripts": {
-    "test:coverage": "rimraf coverage && nyc -e '.ts' -r html -r text mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts'",
-    "test": "npm run test:coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:coverage": "npm test -- --coverage && coveralls < coverage/lcov.info",
     "clean": "rimraf dist",
     "prebuild": "npm run test && npm run clean",
     "build": "ng-packagr -p src/package.json",
@@ -92,5 +92,9 @@
       "umdModuleIds": {}
     },
     "dest": "dist"
+    "@types/jest": "^28.1.2",
+    "jest": "^28.1.1",
+    "json5": "^2.2.1",
+    "ts-jest": "^28.0.5",
   }
 }

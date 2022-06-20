@@ -1,6 +1,4 @@
-import 'mocha';
 import 'reflect-metadata';
-import { expect } from 'chai';
 import { StaticPermissionManager, Type } from './permission-manager';
 import { Assertion, AssertionFunction } from './types';
 
@@ -20,13 +18,14 @@ describe('PermissionManager', () => {
         
         const aces = await permissionManager.getAcesForRolesAndResources([ 'roleA', 'roleB' ], ['resource']);
         
-        expect(aces).to.be.an('array').with.length(2);
-        expect(aces[0].type).to.be.equal(Type.Allow);
-        expect(aces[0].privileges).to.be.eql(new Set([ 'privA' ]));
-        expect(aces[0].assertion!.assert).to.be.equal(assertA);
-        expect(aces[1].type).to.be.equal(Type.Deny);
-        expect(aces[1].privileges).to.be.eql(new Set([ 'privB' ]));
-        expect(aces[1].assertion!.assert).to.be.equal(assertB);
+        expect(aces).toBeInstanceOf(Array);
+        expect(aces.length).toEqual(2);
+        expect(aces[0].type).toEqual(Type.Allow);
+        expect(aces[0].privileges).toEqual(new Set([ 'privA' ]));
+        expect(aces[0].assertion!.assert).toEqual(assertA);
+        expect(aces[1].type).toEqual(Type.Deny);
+        expect(aces[1].privileges).toEqual(new Set([ 'privB' ]));
+        expect(aces[1].assertion!.assert).toEqual(assertB);
     });
     
     it('should export permissions', () => {
@@ -37,7 +36,7 @@ describe('PermissionManager', () => {
         
         const exp = permissionManager.export();
         
-        expect(exp).to.be.eql([
+        expect(exp).toEqual([
             [ 'roleA', [ [ 'resource', [ { type: 'allow', privileges: [ 'privA' ] } ] ] ] ],
             [ 'roleB', [ [ 'resource', [ { type: 'deny', privileges: [ 'privB', 'privC' ] } ] ] ] ],
             [ 'roleC', [ [ 'resourceC', [ { type: 'allow', privileges: null }] ] ] ],
@@ -57,7 +56,7 @@ describe('PermissionManager', () => {
         
         pm.import(exp);
         
-        expect(pm).to.be.eql(permissionManager);
+        expect(pm).toEqual(permissionManager);
     })
 });
 
@@ -65,6 +64,6 @@ describe('Assertion', () => {
     it('should create an assertion', () => {
         const fn = () => true;
         
-        expect(new Assertion(fn).assert).to.be.equal(fn);
+        expect(new Assertion(fn).assert).toEqual(fn);
     });
 });

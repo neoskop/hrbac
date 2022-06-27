@@ -50,6 +50,10 @@ export function permissionManagerFactory(permissionManager : StaticPermissionMan
     return permissionManager;
 }
 
+export function hrbacFactory(): HRBAC {
+    return new HRBAC(inject(RoleManager), inject(ResourceManager), inject(PermissionManager));
+}
+
 @NgModule({
     declarations: [
         AllowedDirective,
@@ -64,10 +68,7 @@ export function permissionManagerFactory(permissionManager : StaticPermissionMan
         DeniedPipe
     ],
     providers: [
-        HRBAC,
-        StaticPermissionManager,
-        StaticResourceManager,
-        StaticRoleManager
+        { provide: HRBAC, useFactory: hrbacFactory }
     ]
 })
 export class HrbacModule {

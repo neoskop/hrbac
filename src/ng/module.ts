@@ -78,6 +78,9 @@ export class HrbacModule {
             providers: [
                 { provide: _CONFIG, useValue: config },
                 { provide: CONFIG, useFactory: configFactory, deps: [ _CONFIG ] },
+                StaticRoleManager,
+                StaticResourceManager,
+                StaticPermissionManager,
                 { provide: RoleManager, useFactory: roleManagerFactory, deps: [ StaticRoleManager, CONFIG ] },
                 { provide: ResourceManager, useFactory: resourceManagerFactory, deps: [ StaticResourceManager, CONFIG ] },
                 { provide: PermissionManager, useFactory: permissionManagerFactory, deps: [ StaticPermissionManager, CONFIG ] },

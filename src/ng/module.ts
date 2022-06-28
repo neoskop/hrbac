@@ -1,4 +1,4 @@
-import { inject, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import { Inject, inject, InjectionToken, ModuleWithProviders, NgModule, Optional } from '@angular/core';
 import {
     HRBAC,
     isPlainObject,
@@ -66,9 +66,6 @@ export function hrbacFactory(): HRBAC {
         DeniedDirective,
         AllowedPipe,
         DeniedPipe
-    ],
-    providers: [
-        { provide: HRBAC, useFactory: hrbacFactory }
     ]
 })
 export class HrbacModule {
@@ -78,6 +75,7 @@ export class HrbacModule {
             providers: [
                 { provide: _CONFIG, useValue: config },
                 { provide: CONFIG, useFactory: configFactory, deps: [ _CONFIG ] },
+                { provide: HRBAC, useFactory: hrbacFactory },
                 StaticRoleManager,
                 StaticResourceManager,
                 StaticPermissionManager,
@@ -85,6 +83,12 @@ export class HrbacModule {
                 { provide: ResourceManager, useFactory: resourceManagerFactory, deps: [ StaticResourceManager, CONFIG ] },
                 { provide: PermissionManager, useFactory: permissionManagerFactory, deps: [ StaticPermissionManager, CONFIG ] },
             ]
+        }
+    }
+
+    constructor(@Optional() @Inject(HRBAC) hrbac?: HRBAC) {
+        if(!hrbac) {
+            throw new Error('You need to import "HrbacModule.forRoot" in your root module/component.');
         }
     }
 }

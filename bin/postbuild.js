@@ -11,8 +11,11 @@ for (const key of ['version', 'description', 'repository', 'author', 'license', 
 const cjsPath = './cjs/index.js';
 
 distPkg.main = cjsPath;
+const def = distPkg.exports['.'].default;
+delete distPkg.exports['.'].default;
 distPkg.exports['.'].node = cjsPath;
 distPkg.exports['.'].require = cjsPath;
+distPkg.exports['.'].default = def;
 
 let fesm2015Adamant = fs.readFileSync(__dirname + '/../dist/fesm2015/neoskop-hrbac.mjs', 'utf8');
 

@@ -1,42 +1,37 @@
-import 'mocha';
 import 'reflect-metadata';
-import { expect, use } from 'chai'
-import * as sinonChai from 'sinon-chai';
 import { ChangeDetectorRef, TemplateRef, ViewContainerRef } from '@angular/core';
 import { HRBAC, StaticPermissionManager, StaticRoleManager, StaticResourceManager } from '@neoskop/hrbac';
 import { RoleStore } from "./role-store";
 import { AllowedDirective, DeniedDirective } from "./directives";
-import { SinonSpy, spy, fake } from 'sinon';
 import { HrbacConfiguration } from './config';
 
-use(sinonChai);
 
 describe('AllowedDirective', () => {
     let hrbac : HRBAC;
     let roleStore : RoleStore;
     let directive : AllowedDirective;
     let viewContainerRef : {
-        clear: SinonSpy,
-        createEmbeddedView: SinonSpy
+        clear: jest.Mock,
+        createEmbeddedView: jest.Mock
     };
     let cdr : {
-        markForCheck: SinonSpy
+        markForCheck: jest.Mock
     };
     const templateRef : TemplateRef<AllowedDirective> = {} as any;
     
     
     async function isVisible() {
         await wait();
-        expect(viewContainerRef.clear).not.to.have.been.called;
-        expect(viewContainerRef.createEmbeddedView).to.have.been.called;
+        expect(viewContainerRef.clear).not.toHaveBeenCalled();
+        expect(viewContainerRef.createEmbeddedView).toHaveBeenCalled();
     }
     
     async function isHidden() {
         await wait();
-        if(viewContainerRef.createEmbeddedView.callCount) {
-            expect(viewContainerRef.clear).to.have.been.called;
+        if(viewContainerRef.createEmbeddedView.mock.calls) {
+            expect(viewContainerRef.clear).toHaveBeenCalled();
         } else {
-            expect(viewContainerRef.clear).not.to.have.been.called;
+            expect(viewContainerRef.clear).not.toHaveBeenCalled();
         }
     }
     
@@ -55,12 +50,12 @@ describe('AllowedDirective', () => {
         roleStore = new RoleStore({ defaultRole: 'guest' } as HrbacConfiguration);
         
         viewContainerRef = {
-            clear: spy(),
-            createEmbeddedView: fake.returns({})
+            clear: jest.fn(),
+            createEmbeddedView: jest.fn().mockReturnValue({})
         };
 
         cdr = {
-            markForCheck: spy()
+            markForCheck: jest.fn()
         };
         
         directive = new AllowedDirective(hrbac, roleStore, cdr as unknown as ChangeDetectorRef, viewContainerRef as unknown as ViewContainerRef, templateRef)
@@ -163,27 +158,27 @@ describe('DeniedDirective', () => {
     let roleStore : RoleStore;
     let directive : DeniedDirective;
     let viewContainerRef : {
-        clear: sinon.SinonSpy,
-        createEmbeddedView: sinon.SinonSpy
+        clear: jest.Mock,
+        createEmbeddedView: jest.Mock
     };
     let cdr : {
-        markForCheck: SinonSpy
+        markForCheck: jest.Mock
     };
     const templateRef : TemplateRef<DeniedDirective> = {} as any;
     
     
     async function isVisible() {
         await wait();
-        expect(viewContainerRef.clear).not.to.have.been.called;
-        expect(viewContainerRef.createEmbeddedView).to.have.been.called;
+        expect(viewContainerRef.clear).not.toHaveBeenCalled();
+        expect(viewContainerRef.createEmbeddedView).toHaveBeenCalled();
     }
     
     async function isHidden() {
         await wait();
-        if(viewContainerRef.createEmbeddedView.callCount) {
-            expect(viewContainerRef.clear).to.have.been.called;
+        if(viewContainerRef.createEmbeddedView.mock.calls) {
+            expect(viewContainerRef.clear).toHaveBeenCalled();
         } else {
-            expect(viewContainerRef.clear).not.to.have.been.called;
+            expect(viewContainerRef.clear).not.toHaveBeenCalled();
         }
     }
     
@@ -202,12 +197,12 @@ describe('DeniedDirective', () => {
         roleStore = new RoleStore({ defaultRole: 'guest' } as HrbacConfiguration);
         
         viewContainerRef = {
-            clear: spy(),
-            createEmbeddedView: fake.returns({})
+            clear: jest.fn(),
+            createEmbeddedView: jest.fn().mockReturnValue({})
         };
 
         cdr = {
-            markForCheck: spy()
+            markForCheck: jest.fn()
         };
         
         directive = new DeniedDirective(hrbac, roleStore, cdr as unknown as ChangeDetectorRef, viewContainerRef as unknown as ViewContainerRef, templateRef)

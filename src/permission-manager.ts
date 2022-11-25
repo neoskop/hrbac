@@ -1,8 +1,6 @@
 import { Assertion, AssertionFunction, Resource, Role } from "./types";
-import { Injectable } from "@angular/core";
 import { assertResourceId } from "./utils";
 
-@Injectable()
 export abstract class PermissionManager {
   abstract getAcesForRolesAndResources(
     roles: string[],
@@ -75,7 +73,6 @@ export type PermissionTransfer = [
   ][]
 ][];
 
-@Injectable({ providedIn: "root" })
 export class StaticPermissionManager extends PermissionManager {
   protected acls = ACLS.create();
 

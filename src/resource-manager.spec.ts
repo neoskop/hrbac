@@ -10,28 +10,28 @@ describe('ResourceManager', () => {
     it('should add parents via addParents', async () => {
         resourceManager.addParents('a', [ 'b', 'c' ]);
         
-        expect(await resourceManager.getParents('a')).toEqual(new Set([ 'b', 'c' ]));
+        expect(await resourceManager.getParents('a')).toEqual([ 'b', 'c' ]);
     
         resourceManager.addParents('a', [ 'b', 'd', 'e' ]);
     
-        expect(await resourceManager.getParents('a')).toEqual(new Set([ 'b', 'c', 'd', 'e' ]));
+        expect(await resourceManager.getParents('a')).toEqual([ 'b', 'c', 'd', 'e' ]);
     });
     
     it('should set parents via setParents', async () => {
         resourceManager.setParents('a', [ 'b', 'c' ]);
         
-        expect(await resourceManager.getParents('a')).toEqual(new Set([ 'b', 'c' ]));
+        expect(await resourceManager.getParents('a')).toEqual([ 'b', 'c' ]);
     
         resourceManager.setParents('a', [ 'b', 'd', 'e' ]);
     
-        expect(await resourceManager.getParents('a')).toEqual(new Set([ 'b', 'd', 'e' ]));
+        expect(await resourceManager.getParents('a')).toEqual([ 'b', 'd', 'e' ]);
     });
     
     it('should return recursively all parents', async () => {
         resourceManager.setParents('a', [ 'b', 'c' ]);
         resourceManager.setParents('b', [ 'd' ]);
         
-        expect(await resourceManager.getRecursiveParentsOf('a')).toEqual([ 'a', 'b', 'c', 'd' ]);
+        expect(await resourceManager.getRecursiveParentsOf('a')).toEqual([ 'a', 'b', 'd', 'c' ]);
     });
     
     it('should export resources', async () => {

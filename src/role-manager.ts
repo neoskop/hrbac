@@ -3,7 +3,7 @@ import { assertRoleId } from './utils';
 import { ParentManager, StaticParentManager } from './parent-manager';
 
 export abstract class RoleManager extends ParentManager<Role> {
-    abstract getParents(role : Role|string) : Promise<Set<string>|undefined>|Set<string>|undefined;
+    abstract getParents(role : Role|string) : Promise<Array<string>|undefined>|Array<string>|undefined;
     abstract getRecursiveParentsOf(role : Role|string) : Promise<string[]>|string[];
 }
 

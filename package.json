@@ -1,6 +1,6 @@
 {
   "name": "@neoskop/hrbac",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "An implementation of a hierarchical role based access control for nodejs and browser.",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
